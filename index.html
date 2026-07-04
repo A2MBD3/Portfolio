@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">আবদুল্লাহ আল মামুন - ব্যক্তিগত ওয়েবসাইট</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body>
+    <!-- Liquid Background -->
+    <div class="liquid-bg">
+        <div class="liquid-shape"></div>
+        <div class="liquid-shape"></div>
+        <div class="liquid-shape"></div>
+    </div>
+
+    <!-- Profile Picture with Dynamic Images -->
+    <div class="profile-image-container">
+        <div class="image-frame">
+            <img id="dynamicProfileImage" src="assets/profile-default.png" alt="আবদুল্লাহ আল মামুন" class="profile-image">
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="floating-nav">
+        <div class="nav-container">
+            <a href="#home" class="nav-btn active">
+                <i class="fas fa-home"></i> হোম
+            </a>
+            <a href="#contact" class="nav-btn">
+                <i class="fas fa-address-book"></i> যোগাযোগ
+            </a>
+            <a href="#projects" class="nav-btn">
+                <i class="fas fa-code"></i> প্রজেক্ট
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Home Tab -->
+        <section id="home" class="section active">
+            <!-- Name and Profession -->
+            <div class="glass-card">
+                <div class="profile-info">
+                    <h1 class="profile-name" id="profileName">আবদুল্লাহ আল মামুন</h1>
+                    <p class="profile-profession" id="profileProfession">ওয়েব ডেভেলপার ও শিক্ষার্থী</p>
+                    
+                    <div class="profile-details">
+                        <p><i class="fas fa-graduation-cap"></i> <span id="profileEducation">ইন্টারমিডিয়েট দ্বিতীয়বর্ষ</span></p>
+                        <p><i class="fas fa-map-marker-alt"></i> <span id="profileLocation">বানারীপাড়া, বরিশাল, বাংলাদেশ</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Me -->
+            <div class="glass-card">
+                <h2><i class="fas fa-user"></i> আমার সম্পর্কে</h2>
+                <div class="about-content">
+                    <p id="aboutText">আমি আবদুল্লাহ আল মামুন, একজন শিক্ষার্থী। বিজ্ঞান বিভাগে পড়াশোনা করছি এবং ওয়েব ডেভেলপমেন্টে আমার গভীর আগ্রহ রয়েছে। আমি নতুন নতুন প্রযুক্তি শিখতে পছন্দ করি এবং ক্রিয়েটিভ কাজ করতে ভালোবাসি।</p>
+                    
+                    <div class="about-details">
+                        <div class="detail-item">
+                            <i class="fas fa-book"></i>
+                            <span>পড়াশোনা: <span id="studyField">বিজ্ঞান বিভাগ</span></span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-bullseye"></i>
+                            <span>লক্ষ্য: <span id="goal">সফটওয়্যার ইঞ্জিনিয়ার</span></span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-heart"></i>
+                            <span>প্যাশন: <span id="passion">নতুন টেকনোলজি শেখা</span></span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-university"></i>
+                            <span>কলেজ: <span id="college">শহীদ স্মৃতি ডিগ্রী কলেজ</span></span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-building"></i>
+                            <span>ডিপার্টমেন্ট: <span id="department">বিজ্ঞান</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hobbies -->
+            <div class="glass-card">
+                <h2><i class="fas fa-heart"></i> শখ</h2>
+                <div class="hobbies-grid" id="hobbiesContainer">
+                    <!-- JavaScript will populate this -->
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="glass-card">
+                <h2><i class="fas fa-star"></i> দক্ষতা</h2>
+                <div class="skills-container" id="skillsContainer">
+                    <!-- JavaScript will populate this -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Tab -->
+        <section id="contact" class="section">
+            <div class="glass-card">
+                <h2><i class="fas fa-address-book"></i> যোগাযোগ</h2>
+                
+                <!-- Contact Info -->
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>ইমেইল</h4>
+                            <a href="mailto:aam.abdullah1@hotmail.com" id="contactEmail" class="copyable" data-copy="email">
+                                aam.abdullah1@hotmail.com
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>ফোন</h4>
+                            <a href="tel:+8801616536678" id="contactPhone" class="copyable" data-copy="phone">
+                                +8801616536678
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>ঠিকানা</h4>
+                            <p id="contactAddress">বানারিপাড়া, বরিশাল, বাংলাদেশ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FreeFire Card -->
+                <div class="freefire-card">
+                    <div class="freefire-bg"></div>
+                    <div class="freefire-content">
+                        <div class="uid-container">
+                            <code class="uid" id="freefireUID">7236610758</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                <div class="social-links">
+                    <h3><i class="fas fa-share-alt"></i> সোশ্যাল মিডিয়া</h3>
+                    <div class="social-icons" id="socialIcons">
+                        <!-- JavaScript will populate this -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Tab -->
+        <section id="projects" class="section">
+            <div class="glass-card">
+                <h2><i class="fas fa-code"></i> আমার প্রজেক্ট ও টুলস</h2>
+                <div class="projects-grid" id="projectsContainer">
+                    <!-- JavaScript will populate this -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© <span id="currentYear"></span> কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল😉</p>
+            <div class="footer-links">
+                <button onclick="window.print()"><i class="fas fa-print"></i> প্রিন্ট</button>
+                <button id="shareBtn"><i class="fas fa-share-alt"></i> শেয়ার</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Area -->
+    <div id="notificationArea"></div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

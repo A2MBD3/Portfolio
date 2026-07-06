@@ -6,11 +6,19 @@
     <meta name="description" content="আবদুল্লাহ আল মামুন - ব্যক্তিগত ওয়েবসাইট">
     <title>আবদুল্লাহ আল মামুন</title>
     
+    <!-- ===== FAVICON (Netlify Root Directory থেকে) ===== -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- ===== FONTS & CSS ===== -->
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- ===== CUSTOM CSS (GitHub থেকে) ===== -->
     <script>
-        // Cache bypass for CSS
         const t = Date.now();
         document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/A2MBD3/Database/portfolio/style.css?t=' + t + '">');
     </script>
@@ -18,13 +26,13 @@
 <body>
     <div id="app"></div>
     
+    <!-- ===== CUSTOM JS (GitHub থেকে) ===== -->
     <script>
-        // Cache bypass for JS
         const t2 = Date.now();
         document.write('<script src="https://cdn.jsdelivr.net/gh/A2MBD3/Database/portfolio/script.js?t=' + t2 + '"><\/script>');
     </script>
     
-    <!-- Hidden Purge Function - UI তে কিছু দেখাবে না -->
+    <!-- ===== HIDDEN PURGE FUNCTION ===== -->
     <script>
         (function() {
             const files = [
@@ -34,10 +42,17 @@
             ];
             
             files.forEach(file => {
-                fetch(`https://purge.jsdelivr.net/gh/A2MBD3/Database/portfolio/${file}`, {
-                    method: 'GET',
-                    mode: 'no-cors'  // CORS error এড়ানোর জন্য
-                }).catch(() => {}); // কোনো error দেখাবে না
+                fetch(`https://purge.jsdelivr.net/gh/A2MBD3/Database/portfolio/${file}`)
+                    .then(response => {
+                        if (response.ok) {
+                            console.log(`✅ Purged: ${file}`);
+                        } else {
+                            console.log(`⚠️ Failed: ${file} (Status: ${response.status})`);
+                        }
+                    })
+                    .catch(error => {
+                        console.log(`❌ Error: ${file}`, error);
+                    });
             });
         })();
     </script>

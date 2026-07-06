@@ -6,12 +6,40 @@
     <meta name="description" content="আবদুল্লাহ আল মামুন - ব্যক্তিগত ওয়েবসাইট">
     <title>আবদুল্লাহ আল মামুন</title>
     
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        // Cache bypass for CSS
+        const t = Date.now();
+        document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/A2MBD3/Database/portfolio/style.css?t=' + t + '">');
+    </script>
 </head>
 <body>
     <div id="app"></div>
-    <script src="script.js"></script>
+    
+    <script>
+        // Cache bypass for JS
+        const t2 = Date.now();
+        document.write('<script src="https://cdn.jsdelivr.net/gh/A2MBD3/Database/portfolio/script.js?t=' + t2 + '"><\/script>');
+    </script>
+    
+    <!-- Hidden Purge Function - UI তে কিছু দেখাবে না -->
+    <script>
+        (function() {
+            const files = [
+                'style.css',
+                'script.js', 
+                'a2mbd3.json'
+            ];
+            
+            files.forEach(file => {
+                fetch(`https://purge.jsdelivr.net/gh/A2MBD3/Database/portfolio/${file}`, {
+                    method: 'GET',
+                    mode: 'no-cors'  // CORS error এড়ানোর জন্য
+                }).catch(() => {}); // কোনো error দেখাবে না
+            });
+        })();
+    </script>
 </body>
 </html>

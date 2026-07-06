@@ -1,0 +1,99 @@
+{
+  "site": {
+    "title": "আবদুল্লাহ আল মামুন",
+    "description": "আবদুল্লাহ আল মামুন",
+    "lang": "bn"
+  },
+  "theme": {
+    "primaryColor": "#7c3aed",
+    "secondaryColor": "#a855f7",
+    "accentColor": "#c084fc",
+    "backgroundColor": "#0a0015",
+    "surfaceColor": "#1a0030",
+    "fontFamily": "'Hind Siliguri', 'Poppins', sans-serif",
+    "glassEffect": true,
+    "rainEffect": true,
+    "rainDropCount": 100
+  },
+  "personal": {
+    "name": "আবদুল্লাহ আল মামুন",
+    "profession": "ওয়েব ডেভেলপার ও শিক্ষার্থী",
+    "education": "ইন্টারমিডিয়েট দ্বিতীয়বর্ষ",
+    "field": "বিজ্ঞান বিভাগ",
+    "goal": "অনির্ধারিত",
+    "passion": "নতুন টেকনোলজি শেখা",
+    "location": "বরিশাল, বাংলাদেশ",
+    "college": "শহীদ স্মৃতি ডিগ্রী কলেজ",
+    "department": "বিজ্ঞান",
+    "bio": "আমি আবদুল্লাহ আল মামুন, একজন শিক্ষার্থী। বিজ্ঞান বিভাগে পড়াশোনা করছি এবং ওয়েব ডেভেলপমেন্টে আমার গভীর আগ্রহ রয়েছে। আমি নতুন নতুন প্রযুক্তি শিখতে পছন্দ করি এবং ক্রিয়েটিভ কাজ করতে ভালোবাসি।"
+  },
+  "profileDetails": [
+    {"icon": "fa-graduation-cap", "label": "ইন্টারমিডিয়েট পরীক্ষার্থী"},
+    {"icon": "fa-map-marker-alt", "label": "বরিশাল, বাংলাদেশ"}
+  ],
+  "aboutItems": [
+    {"icon": "fa-book", "text": "পড়াশোনা: বিজ্ঞান বিভাগ"},
+    {"icon": "fa-bullseye", "text": "লক্ষ্য: অনির্ধারিত"},
+    {"icon": "fa-heart", "text": "প্যাশন: নতুন টেকনোলজি শেখা"},
+    {"icon": "fa-university", "text": "কলেজ: শহীদ স্মৃতি ডিগ্রী কলেজ"},
+    {"icon": "fa-building", "text": "ডিপার্টমেন্ট: বিজ্ঞান"}
+  ],
+  "contact": {
+    "email": "aam.abdullah1@hotmail.com",
+    "address": "বরিশাল, বাংলাদেশ",
+    "freefire": "7236610758"
+  },
+  "social": [
+    {"name": "Facebook", "icon": "fa-facebook", "url": "https://www.facebook.com/a2mbd3", "color": "#1877f2"},
+    {"name": "WhatsApp", "icon": "fa-whatsapp", "url": "https://wa.me/+8801616536678", "color": "#25d366"},
+    {"name": "GitHub", "icon": "fa-github", "url": "https://github.com/A2MBD3", "color": "#333333"},
+    {"name": "Instagram", "icon": "fa-instagram", "url": "https://instagram.com/a2mbd3", "color": "#e4405f"},
+    {"name": "Telegram", "icon": "fa-telegram", "url": "https://t.me/a2mbd3", "color": "#0088cc"}
+  ],
+  "hobbies": [
+    "ঘুম",
+    "ওয়েব ডিজাইন",
+    "ফ্রি ফায়ার",
+    "অ্যান্ড্রয়েড মডিফিকেশন",
+    "ফটোগ্রাফি",
+    "গান শোনা"
+  ],
+  "skills": [
+    {"name": "HTML/CSS", "level": 60},
+    {"name": "JavaScript", "level": 13},
+    {"name": "React", "level": 3},
+    {"name": "C/C++", "level": 9},
+    {"name": "Python", "level": 30}
+  ],
+  "tools": [
+    {
+      "name": "Nebula Bypass",
+      "description": "Advance bookmarklet for bypass multiple website ads",
+      "icon": "https://raw.githubusercontent.com/A2MBD3/Aincrad/main//bot/bot.png",
+      "link": "https://nebula-bot-8afg.onrender.com"
+    },
+    {
+      "name": "আবহাওয়া",
+      "description": "রিয়েল-টাইম আবহাওয়া আপডেট",
+      "icon": "fa-cloud-sun",
+      "link": "https://live8.bmd.gov.bd/p/Weather-Forecast"
+    }
+  ],
+  "images": {
+    "profile": [
+      "https://lh3.googleusercontent.com/pw/AP1GczNIgSz588M2Ld4O5KyyB3-cKwB12vs_6iCVsVe9UUzaaRmjeWgyOaRGXOboBU07RzHGk_W1UyqwTEqOVyrR22y_cHTCdph8ZgWtqgCsXE7_Bok3ttCpRmt4vDH2sruwBCgKhYCg1tBvnDxswoilubQWhg=w721-h988-s-no-gm?authuser=0",
+      "https://lh3.googleusercontent.com/pw/AP1GczOG-NFdCVVJVwZqwsPo79rEl8nJEKYH0TVPUQyqgAIByT3qQ1hnHKSX3uNpSZtpushccB4NmvVAzL6C1hIQhfeXK5JG1ZHp9qVyxH_5nl6TTkkc4bgbi-HKAfahj4fMECgTOrGvVmL9hbEztJXb5_xPvw=w721-h988-s-no-gm?authuser=0",
+      "https://lh3.googleusercontent.com/pw/AP1GczMlkZgEkgImmlwjx2mf-P3J3NEU0cdkePSGb5eLGCNLEmUYwO1fa7fj-OkdFLhqsEY3U_QWOo1ceFhaYFQknaSrArft4_xdQlglxjhnJbS2uPgCYfIEE1S-4rgV4tt137EpybOFRvwUyOWWz6D5AWQRDg=w721-h988-s-no-gm?authuser=0"
+    ],
+    "freefire_bg": "freefire-bg.jpg"
+  },
+  "navigation": [
+    {"label": "হোম", "icon": "fa-home", "section": "home"},
+    {"label": "যোগাযোগ", "icon": "fa-address-book", "section": "contact"},
+    {"label": "প্রজেক্ট", "icon": "fa-code", "section": "projects"}
+  ],
+  "footer": {
+    "text": "কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল",
+    "emoji": "😉"
+  }
+}

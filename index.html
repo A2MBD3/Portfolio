@@ -20,41 +20,17 @@
     
     <script>
         const t = Date.now();
-        document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/A2MBD3/Database/portfolio/style.css?t=' + t + '">');
+        document.write('<link rel="stylesheet" href="style.css">');
     </script>
 </head>
 <body>
     <div id="app"></div>
     
-    <!-- ===== CUSTOM JS (GitHub থেকে) ===== -->
     <script>
         const t2 = Date.now();
-        document.write('<script src="https://cdn.jsdelivr.net/gh/A2MBD3/Database/portfolio/script.js?t=' + t2 + '"><\/script>');
+        document.write('<script src="script.js"><\/script>');
     </script>
     
-    <!-- ===== HIDDEN PURGE FUNCTION ===== -->
-    <script>
-        (function() {
-            const files = [
-                'style.css',
-                'script.js', 
-                'a2mbd3.json'
-            ];
-            
-            files.forEach(file => {
-                fetch(`https://purge.jsdelivr.net/gh/A2MBD3/Database/portfolio/${file}`)
-                    .then(response => {
-                        if (response.ok) {
-                            console.log(`✅ Purged: ${file}`);
-                        } else {
-                            console.log(`⚠️ Failed: ${file} (Status: ${response.status})`);
-                        }
-                    })
-                    .catch(error => {
-                        console.log(`❌ Error: ${file}`, error);
-                    });
-            });
-        })();
-    </script>
+
 </body>
 </html>

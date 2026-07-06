@@ -376,7 +376,7 @@ class DynamicPortfolio {
         
         return `
             <div class="footer-bar">
-                <p>© <span id="currentYear"></span> | ${footer.text || ''} <span>${footer.emoji || ''}</span></p>
+                <p>© 2024 | ${footer.text || ''} <span>${footer.emoji || ''}</span></p>
                 <button id="shareBtn" style="margin-top:10px;padding:8px 20px;background:rgba(124,58,237,0.2);border:1px solid rgba(168,85,247,0.3);color:white;border-radius:20px;cursor:pointer;font-family:inherit;">
                     <i class="fas fa-share-alt"></i> শেয়ার
                 </button>

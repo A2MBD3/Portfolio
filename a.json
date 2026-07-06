@@ -1,0 +1,64 @@
+{
+  "personal": {
+    "name": "আবদুল্লাহ আল মামুন",
+    "profession": "ওয়েব ডেভেলপার ও শিক্ষার্থী",
+    "education": "ইন্টারমিডিয়েট দ্বিতীয়বর্ষ",
+    "field": "বিজ্ঞান বিভাগ",
+    "goal": "অনির্ধারিত",
+    "passion": "নতুন টেকনোলজি শেখা",
+    "location": "কাজলাহার, বানারীপাড়া, বরিশাল, বাংলাদেশ",
+    "college": "শহীদ স্মৃতি ডিগ্রী কলেজ",
+    "department": "বিজ্ঞান",
+    "bio": "আমি আবদুল্লাহ আল মামুন, একজন শিক্ষার্থী। বিজ্ঞান বিভাগে পড়াশোনা করছি এবং ওয়েব ডেভেলপমেন্টে আমার গভীর আগ্রহ রয়েছে। আমি নতুন নতুন প্রযুক্তি শিখতে পছন্দ করি এবং ক্রিয়েটিভ কাজ করতে ভালোবাসি।"
+  },
+  "contact": {
+    "email": "aam.abdullah1@hotmail.com",
+    "phone": "01616536678",
+    "address": "কাজলাহার, বানারীপাড়া, বরিশাল, বাংলাদেশ",
+    "freefire": "7236610758"
+  },
+  "social": {
+    "facebook": "https://www.facebook.com/a2mbd3",
+    "whatsapp": "https://wa.me/+8801616536678",
+    "github": "https://github.com/A2M36",
+    "instagram": "https://instagram.com/a2mbd3"
+  },
+  "hobbies": [
+    "ঘুম",
+    "ওয়েব ডিজাইন",
+    "ফ্রি ফায়ার",
+    "অ্যান্ড্রয়েড মডিফিকেশন",
+    "ফটোগ্রাফি",
+    "গান শোনা",
+    "হ্যাকিং"
+  ],
+  "skills": [
+    {"name": "HTML/CSS", "level": 70},
+    {"name": "JavaScript", "level": 13},
+    {"name": "React", "level": 2},
+    {"name": "C/C++", "level": 7},
+    {"name": "Python", "level": 30}
+  ],
+  "tools": [
+    {
+      "name": "ক্যালকুলেটর",
+      "description": "এডভান্সড সাইন্টিফিক ক্যালকুলেটর",
+      "icon": "calculator",
+      "link": "https://www.calculator.net/scientific-calculator.html"
+    },
+    {
+      "name": "আবহাওয়া",
+      "description": "রিয়েল-টাইম আবহাওয়া আপডেট",
+      "icon": "cloud-sun",
+      "link": "https://live8.bmd.gov.bd/p/Weather-Forecast"
+    }
+  ],
+  "images": {
+    "profile": [
+      "https://lh3.googleusercontent.com/pw/AP1GczNIgSz588M2Ld4O5KyyB3-cKwB12vs_6iCVsVe9UUzaaRmjeWgyOaRGXOboBU07RzHGk_W1UyqwTEqOVyrR22y_cHTCdph8ZgWtqgCsXE7_Bok3ttCpRmt4vDH2sruwBCgKhYCg1tBvnDxswoilubQWhg=w721-h988-s-no-gm?authuser=0",
+      "https://lh3.googleusercontent.com/pw/AP1GczOG-NFdCVVJVwZqwsPo79rEl8nJEKYH0TVPUQyqgAIByT3qQ1hnHKSX3uNpSZtpushccB4NmvVAzL6C1hIQhfeXK5JG1ZHp9qVyxH_5nl6TTkkc4bgbi-HKAfahj4fMECgTOrGvVmL9hbEztJXb5_xPvw=w721-h988-s-no-gm?authuser=0",
+      "https://lh3.googleusercontent.com/pw/AP1GczMlkZgEkgImmlwjx2mf-P3J3NEU0cdkePSGb5eLGCNLEmUYwO1fa7fj-OkdFLhqsEY3U_QWOo1ceFhaYFQknaSrArft4_xdQlglxjhnJbS2uPgCYfIEE1S-4rgV4tt137EpybOFRvwUyOWWz6D5AWQRDg=w721-h988-s-no-gm?authuser=0"
+    ],
+    "freefire_bg": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800"
+  }
+}

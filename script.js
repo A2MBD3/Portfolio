@@ -1,468 +1,482 @@
-// Main JavaScript File - Simplified and Fixed
-class WebsiteManager {
+class PortfolioApp {
     constructor() {
-        this.profileData = this.getProfileData();
+        this.data = null;
         this.currentSection = 'home';
-        this.profileImages = this.getProfileImages();
         this.currentImageIndex = 0;
         this.imageInterval = null;
+        this.images = [];
         this.init();
     }
 
-    init() {
-        console.log('WebsiteManager initialized');
-        this.setupEventListeners();
-        this.updateCurrentYear();
-        this.updateUI();
+    async init() {
+        try {
+            const response = await fetch('a.json');
+            if (!response.ok) throw new Error('Failed to load data');
+            this.data = await response.json();
+            this.images = this.data.images?.profile || [];
+        } catch (error) {
+            console.error('Error loading data:', error);
+            this.showError('ডাটা লোড করতে ব্যর্থ হয়েছে');
+            return;
+        }
+
+        this.buildApp();
+        this.setupRain();
+        this.setupNavigation();
+        this.setupCopyListeners();
+        this.setupShareButton();
         this.startImageRotation();
+        this.updateYear();
+        this.switchSection('home');
     }
 
-    getProfileData() {
-        return {
-            "personal": {
-                "name": "আবদুল্লাহ আল মামুন",
-                "profession": "ওয়েব ডেভেলপার ও শিক্ষার্থী",
-                "education": "ইন্টারমিডিয়েট দ্বিতীয়বর্ষ",
-                "field": "বিজ্ঞান বিভাগ",
-                "goal": "অনির্ধারিত",
-                "passion": "নতুন টেকনোলজি শেখা",
-                "location": "কাজলাহার,বানারীপাড়া, বরিশাল, বাংলাদেশ",
-                "college": "শহীদ স্মৃতি ডিগ্রী কলেজ",
-                "department": "বিজ্ঞান",
-                "bio": "আমি আবদুল্লাহ আল মামুন, একজন শিক্ষার্থী। বিজ্ঞান বিভাগে পড়াশোনা করছি এবং ওয়েব ডেভেলপমেন্টে আমার গভীর আগ্রহ রয়েছে। আমি নতুন নতুন প্রযুক্তি শিখতে পছন্দ করি এবং ক্রিয়েটিভ কাজ করতে ভালোবাসি।"
-            },
-            "contact": {
-                "email": "aam.abdullah1@hotmail.com",
-                "phone": "01616536678",
-                "address": "কাজলাহার,বানারীপাড়া, বরিশাল, বাংলাদেশ",
-                "freefire": "7236610758"
-            },
-            "social": {
-                "facebook": "https://www.facebook.com/a2mbd3",
-                "whatsapp": "https://wa.me/+8801616536678",
-                "github": "https://github.com/A2M36",
-                "instagram": "https://instagram.com/a2mbd3"
-            },
-            "hobbies": [
-                "ঘুম",
-                "ওয়েব ডিজাইন",
-                "ফ্রি ফায়ার",
-                "অ্যান্ড্রয়েড মডিফিকেশন",
-                "ফটোগ্রাফি",
-                "গান শোনা",
-                "হ্যাকিং",
-                
-            ],
-            "skills": [
-                {"name": "HTML/CSS", "level": "70"},
-                {"name": "JavaScript", "level": "13"},
-                {"name": "React", "level": "2"},
-                {"name": "C/C++", "level": "7"},
-                {"name": "Python", "level": "30"}
-            ],
-            "tools": [
-                {
-                    "name": "ক্যালকুলেটর",
-                    "description": "এডভান্সড সাইন্টিফিক ক্যালকুলেটর",
-                    "icon": "calculator",
-                    "link": "https://www.calculator.net/scientific-calculator.html"
-                },
-                {
-                    "name": "আবহাওয়া",
-                    "description": "রিয়েল-টাইম আবহাওয়া আপডেট",
-                    "icon": "cloud-sun",
-                    "link": "https://live8.bmd.gov.bd/p/Weather-Forecast"
-                }
-            ]
-        };
+    buildApp() {
+        const app = document.getElementById('app');
+        if (!app) return;
+
+        app.innerHTML = `
+            ${this.buildRainContainer()}
+            ${this.buildProfileSection()}
+            ${this.buildNavigation()}
+            ${this.buildMainContent()}
+            ${this.buildFooter()}
+            ${this.buildNotificationArea()}
+        `;
     }
 
- getProfileImages() {
-    return [
-        "assets/profile-default.png",
-        "https://lh3.googleusercontent.com/pw/AP1GczNIgSz588M2Ld4O5KyyB3-cKwB12vs_6iCVsVe9UUzaaRmjeWgyOaRGXOboBU07RzHGk_W1UyqwTEqOVyrR22y_cHTCdph8ZgWtqgCsXE7_Bok3ttCpRmt4vDH2sruwBCgKhYCg1tBvnDxswoilubQWhg=w721-h988-s-no-gm?authuser=0",
-  
-        "https://lh3.googleusercontent.com/pw/AP1GczOG-NFdCVVJVwZqwsPo79rEl8nJEKYH0TVPUQyqgAIByT3qQ1hnHKSX3uNpSZtpushccB4NmvVAzL6C1hIQhfeXK5JG1ZHp9qVyxH_5nl6TTkkc4bgbi-HKAfahj4fMECgTOrGvVmL9hbEztJXb5_xPvw=w721-h988-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczMlkZgEkgImmlwjx2mf-P3J3NEU0cdkePSGb5eLGCNLEmUYwO1fa7fj-OkdFLhqsEY3U_QWOo1ceFhaYFQknaSrArft4_xdQlglxjhnJbS2uPgCYfIEE1S-4rgV4tt137EpybOFRvwUyOWWz6D5AWQRDg=w721-h988-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczPZiU4pmRzf6HN6K4hFWh4E2jrzCLLjodSCz0fdBexzW6ysGshA3E-q7puYIx7ljshRnWcDGCA1NwgxvmvjwEsct5wSwnYqpjw8qoDQVMfCr_C4tp0zbn7UhjCnU174t1S_tgK6kCDaE8Jflu1iM5kf9A=w721-h988-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczOkkVHEoscz8wF_6i3p1vbdcSGBSpN9MuC8mUS719k2hetbUOPUqXmPt-FaqRaP_FHRNXslDTUfTs-xKgD552qji_q2mxiDA7vSEQ9nXm5j5HiVMaRZi54OUz-cl4WdZlUK7VQPk0eTpMVn0RYXgi-CyA=w721-h988-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczP7RPztYpehqNW-7giqbi4XQsdTnreWMu-IAWWg0Kbyo6-1_RyITXB4CHapQVbk6OJJlSUCNJfOtEq1C1wdjcONig6N91kWYZEDbrtQFN1fxPY4y6UHHBNR6gr4gjeZPpPyjdEKFIL4Z5vXorbcZx8giw=w721-h988-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczMeey6xCXpJDdwFrbo7TlA6COxk2MbW0azEnJQ17jDxycp67L6Cx5bp_YDAY31bkjPLrrcA0bKEetGTmDusJzqOnm895lWPnK9OOXe-UrM8NTeOszirqNSRqkNbc18KqZZ69Cuj_15viDQFTmi3pVa53w=w721-h988-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczPOG0qa0ybsUn9-hGXOai267W1PaLFj2Q7-OnAhVLDn1CR--tVPrLHCdrxD-Nhbn9UAoScGurQ1fVIBEqlGjxRIjNxrerI8UYF6TXQhlp1XfpprxahWsHRWjZJt8l1bh8vmszVLz-cORN_lg9USuBOTOA=w721-h923-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczMy6eOT7GvXQCoxtW3IVLoF9Ho9stJ105oN3gSQ1ZOLDQ53hHW8U7v9gRBgo-BqaY6gAW9LG4TSZq5GiRqI8rZhnsv8ZyhVwx93yP_-3KtlDQFfCCKxUM-mVgZbvv-9S8-anph1NU5eiNnWdzNeMpsKaA=w721-h904-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczPAbYEJh4snU4FdHeHT1iUvTzkKr1LimJsjsJ1b6ywJv-8sgE2T0aqJ0mOVcwpgKAD9wpBVFV8K2Gcz2fbnCrbMIaIKSL15HhxeSLPyPy-HeCKywRTIv7xXQVmfblqiLTrjGelSpQ861bQ6CYzTltJBOA=w721-h988-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczMlIOp7Z1Y2BnT07LV9wQuN0d78UChIygoV0TzxsK4i_nd05Crao9vNlOysgkELvSIiRCT5ld55cop5aM2YdQ-r0RqLxVbZESH_BxhqBJ3owmkSdWEfG0JBEJByyogVuLifzPXb5Hrlwjnsm7JPvLM8xQ=w721-h988-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczNGKIjpuYufb0tLe0I90L1DAli3aWM_FxQhHiJd9OJLxLJRHS1Wna4qQLHT36a0RSoDJnz_8z4YeBnNSmAxrg8x_kRIbmXDjx0MNOUYFNcxnLafuz_kvTusQ-eVOfNXVDJqktZeRz2PEJpCr9M9tGPg8g=w721-h988-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczMXWbu3q02og-gplnI8Z-INcVqOz1lBH_NxS9wueLYfAv5XFrz5CNXKSITd1yn4aIZGH_hngxPJGVsx12jjQ8Bf-mRY7cdoQCetCeI3QB95h-yj0kCPuazS3lBiKox-ZMc11M0k7pi3Tw170_pNeCHNUA=w721-h988-s-no-gm?authuser=0",
-        "https://lh3.googleusercontent.com/pw/AP1GczNcz2gOAXWO3v_GRRHkzXzBhnp6T6_tPEL4IcI5Igoy4EhOME8uom8IY8A3XYiDg93JhVM0Nule4nqkcV3DBnb3RekfeBDkHscj_qdCRQitX4bOiKKcx6I76Bh_fVnuy2gsF-otRsrm8MVB4UmrFHu_Dw=w721-h988-s-no-gm?authuser=0"
-    ];
-}
-
-    updateUI() {
-        const personal = this.profileData.personal;
-        const contact = this.profileData.contact;
-        const social = this.profileData.social;
-        const hobbies = this.profileData.hobbies;
-        const skills = this.profileData.skills;
-        const tools = this.profileData.tools;
-
-        // Update page title
-        document.title = `${personal.name} - ব্যক্তিগত ওয়েবসাইট`;
-        document.getElementById('pageTitle').textContent = document.title;
-
-        // Update personal info
-        document.getElementById('profileName').textContent = personal.name;
-        document.getElementById('profileProfession').textContent = personal.profession;
-        document.getElementById('profileEducation').textContent = personal.education;
-        document.getElementById('profileLocation').textContent = personal.location;
-
-        // Update about section
-        document.getElementById('aboutText').textContent = personal.bio;
-        document.getElementById('studyField').textContent = personal.field;
-        document.getElementById('goal').textContent = personal.goal;
-        document.getElementById('passion').textContent = personal.passion;
-        document.getElementById('college').textContent = personal.college;
-        document.getElementById('department').textContent = personal.department;
-
-        // Update contact info
-        document.getElementById('contactEmail').textContent = contact.email;
-        document.getElementById('contactEmail').href = `mailto:${contact.email}`;
-        document.getElementById('contactPhone').textContent = contact.phone;
-        document.getElementById('contactPhone').href = `tel:${contact.phone.replace(/\s+/g, '')}`;
-        document.getElementById('contactAddress').textContent = contact.address;
-
-        // Update FreeFire UID
-        document.getElementById('freefireUID').textContent = contact.freefire;
-
-        // Update hobbies
-        this.updateHobbies(hobbies);
-
-        // Update skills
-        this.updateSkills(skills);
-
-        // Update projects/tools
-        this.updateProjects(tools);
-
-        // Update social links
-        this.updateSocialLinks(social);
+    buildRainContainer() {
+        return '<div class="rain-container" id="rainContainer"></div>';
     }
 
-    updateHobbies(hobbies) {
-        const container = document.getElementById('hobbiesContainer');
-        if (!container) return;
-
-        container.innerHTML = '';
-        
-        hobbies.forEach(hobby => {
-            const hobbyElement = document.createElement('div');
-            hobbyElement.className = 'hobby-tag';
-            hobbyElement.textContent = hobby;
-            container.appendChild(hobbyElement);
-        });
-    }
-
-    updateSkills(skills) {
-        const container = document.getElementById('skillsContainer');
-        if (!container) return;
-
-        container.innerHTML = '';
-        
-        skills.forEach(skill => {
-            const skillElement = document.createElement('div');
-            skillElement.className = 'skill-item';
-            
-            skillElement.innerHTML = `
-                <div class="skill-name">
-                    <span>${skill.name}</span>
-                    <span>${skill.level}%</span>
+    buildProfileSection() {
+        return `
+            <div class="profile-section">
+                <div class="profile-card-wrapper">
+                    <div class="profile-glow"></div>
+                    <div class="profile-card-outer">
+                        <div class="profile-card-inner" id="profileCard">
+                            <img 
+                                id="profileImage" 
+                                src="${this.images[0] || ''}" 
+                                alt="Profile" 
+                                class="profile-image"
+                            >
+                            <div class="profile-overlay"></div>
+                        </div>
+                    </div>
+                    <div class="profile-sparkle" style="top: 10%; left: 15%; animation-delay: 0s;"></div>
+                    <div class="profile-sparkle" style="top: 20%; right: 12%; animation-delay: 0.5s;"></div>
+                    <div class="profile-sparkle" style="bottom: 15%; left: 20%; animation-delay: 1s;"></div>
+                    <div class="profile-sparkle" style="bottom: 25%; right: 18%; animation-delay: 1.5s;"></div>
                 </div>
-                <div class="skill-bar">
-                    <div class="skill-progress" style="width: ${skill.level}%"></div>
-                </div>
-            `;
-            
-            container.appendChild(skillElement);
-        });
+            </div>
+        `;
     }
 
-    updateProjects(projects) {
-        const container = document.getElementById('projectsContainer');
-        if (!container) return;
-
-        container.innerHTML = '';
-        
-        projects.forEach(project => {
-            const projectElement = document.createElement('div');
-            projectElement.className = 'project-card';
-            
-            if (project.link) {
-                projectElement.style.cursor = 'pointer';
-                projectElement.addEventListener('click', () => {
-                    window.open(project.link, '_blank');
-                });
-            }
-            
-            projectElement.innerHTML = `
-                <div class="project-icon">
-                    <i class="fas fa-${project.icon || 'code'}"></i>
-                </div>
-                <h3>${project.name}</h3>
-                <p>${project.description}</p>
-                ${project.link ? `
-                    <a href="${project.link}" class="project-link" target="_blank">
-                        <i class="fas fa-external-link-alt"></i> দেখুন
-                    </a>
-                ` : ''}
-            `;
-            
-            container.appendChild(projectElement);
-        });
+    buildNavigation() {
+        return `
+            <nav class="nav-container glass" id="mainNav">
+                <a href="#" class="nav-btn active" data-section="home">
+                    <i class="fas fa-home"></i> হোম
+                </a>
+                <a href="#" class="nav-btn" data-section="contact">
+                    <i class="fas fa-address-book"></i> যোগাযোগ
+                </a>
+                <a href="#" class="nav-btn" data-section="projects">
+                    <i class="fas fa-code"></i> প্রজেক্ট
+                </a>
+            </nav>
+        `;
     }
 
-    updateSocialLinks(social) {
-        const container = document.getElementById('socialIcons');
-        if (!container) return;
+    buildMainContent() {
+        return `
+            <main>
+                ${this.buildHomeSection()}
+                ${this.buildContactSection()}
+                ${this.buildProjectsSection()}
+            </main>
+        `;
+    }
 
-        container.innerHTML = '';
-        
-        const socialPlatforms = {
-            'facebook': { icon: 'fab fa-facebook', color: '#1877F2', name: 'Facebook' },
-            'twitter': { icon: 'fab fa-twitter', color: '#1DA1F2', name: 'Twitter' },
-            'github': { icon: 'fab fa-github', color: '#333', name: 'GitHub' },
-            'linkedin': { icon: 'fab fa-linkedin', color: '#0077B5', name: 'LinkedIn' },
-            'instagram': { icon: 'fab fa-instagram', color: '#E4405F', name: 'Instagram' },
-            'youtube': { icon: 'fab fa-youtube', color: '#FF0000', name: 'YouTube' },
-            'whatsapp': { icon: 'fab fa-whatsapp', color: '#25D366', name: 'WhatsApp' }
+    buildHomeSection() {
+        const p = this.data.personal;
+        return `
+            <section id="home" class="section">
+                <div class="section-card glass glass-hover profile-info-card">
+                    <h1 class="profile-name">${p.name}</h1>
+                    <p class="profile-profession">${p.profession}</p>
+                    <div class="profile-details-row">
+                        <div class="profile-detail-badge">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>${p.education}</span>
+                        </div>
+                        <div class="profile-detail-badge">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${p.location}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card glass glass-hover">
+                    <h2 class="section-title"><i class="fas fa-user"></i> আমার সম্পর্কে</h2>
+                    <p class="about-text">${p.bio}</p>
+                    <div class="about-grid">
+                        <div class="about-item">
+                            <i class="fas fa-book"></i>
+                            <span>পড়াশোনা: ${p.field}</span>
+                        </div>
+                        <div class="about-item">
+                            <i class="fas fa-bullseye"></i>
+                            <span>লক্ষ্য: ${p.goal}</span>
+                        </div>
+                        <div class="about-item">
+                            <i class="fas fa-heart"></i>
+                            <span>প্যাশন: ${p.passion}</span>
+                        </div>
+                        <div class="about-item">
+                            <i class="fas fa-university"></i>
+                            <span>কলেজ: ${p.college}</span>
+                        </div>
+                        <div class="about-item">
+                            <i class="fas fa-building"></i>
+                            <span>ডিপার্টমেন্ট: ${p.department}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card glass glass-hover">
+                    <h2 class="section-title"><i class="fas fa-heart"></i> শখ</h2>
+                    <div class="hobbies-container">
+                        ${this.data.hobbies.map(h => `<span class="hobby-chip">${h}</span>`).join('')}
+                    </div>
+                </div>
+
+                <div class="section-card glass glass-hover">
+                    <h2 class="section-title"><i class="fas fa-star"></i> দক্ষতা</h2>
+                    ${this.data.skills.map(s => `
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span>${s.name}</span>
+                                <span>${s.level}%</span>
+                            </div>
+                            <div class="skill-bar-track">
+                                <div class="skill-bar-fill" style="width: 0%" data-width="${s.level}%"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
+        `;
+    }
+
+    buildContactSection() {
+        const c = this.data.contact;
+        const freefireBg = this.data.images?.freefire_bg || '';
+        return `
+            <section id="contact" class="section">
+                <div class="section-card glass glass-hover">
+                    <h2 class="section-title"><i class="fas fa-address-book"></i> যোগাযোগ</h2>
+                    <div class="contact-list">
+                        <div class="contact-row copy-trigger" data-copy="${c.email}" data-label="ইমেইল">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>ইমেইল</h4>
+                                <a href="mailto:${c.email}">${c.email}</a>
+                            </div>
+                        </div>
+                        <div class="contact-row copy-trigger" data-copy="${c.phone}" data-label="ফোন">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h4>ফোন</h4>
+                                <a href="tel:${c.phone.replace(/\s+/g, '')}">${c.phone}</a>
+                            </div>
+                        </div>
+                        <div class="contact-row">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4>ঠিকানা</h4>
+                                <span>${c.address}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="freefire-card glass copy-trigger" data-copy="${c.freefire}" data-label="FreeFire UID">
+                        ${freefireBg ? `<img src="${freefireBg}" alt="" class="freefire-bg-img">` : ''}
+                        <div class="freefire-overlay">
+                            <div class="freefire-label">Free Fire UID</div>
+                            <div class="freefire-uid">${c.freefire}</div>
+                        </div>
+                    </div>
+
+                    ${this.buildSocialSection()}
+                </div>
+            </section>
+        `;
+    }
+
+    buildSocialSection() {
+        const social = this.data.social;
+        const platforms = {
+            'facebook': { icon: 'fab fa-facebook', name: 'Facebook' },
+            'whatsapp': { icon: 'fab fa-whatsapp', name: 'WhatsApp' },
+            'github': { icon: 'fab fa-github', name: 'GitHub' },
+            'instagram': { icon: 'fab fa-instagram', name: 'Instagram' }
         };
 
-        Object.entries(social).forEach(([platform, url]) => {
-            if (url && socialPlatforms[platform.toLowerCase()]) {
-                const platformData = socialPlatforms[platform.toLowerCase()];
-                
-                const link = document.createElement('a');
-                link.href = url;
-                link.target = '_blank';
-                link.className = 'social-icon';
-                link.title = platformData.name;
-                link.innerHTML = `<i class="${platformData.icon}"></i>`;
-                
-                link.addEventListener('mouseenter', () => {
-                    link.style.backgroundColor = platformData.color;
-                });
-                
-                link.addEventListener('mouseleave', () => {
-                    link.style.backgroundColor = '';
-                });
-                
-                container.appendChild(link);
-            }
-        });
+        const links = Object.entries(social)
+            .filter(([key, url]) => url && platforms[key])
+            .map(([key, url]) => `
+                <a href="${url}" target="_blank" rel="noopener" class="social-link-btn" title="${platforms[key].name}">
+                    <i class="${platforms[key].icon}"></i>
+                </a>
+            `).join('');
+
+        return `
+            <div class="social-section">
+                <h3 class="social-title"><i class="fas fa-share-alt"></i> সোশ্যাল মিডিয়া</h3>
+                <div class="social-links-container">${links}</div>
+            </div>
+        `;
     }
 
-    setupEventListeners() {
-        // Navigation
+    buildProjectsSection() {
+        return `
+            <section id="projects" class="section">
+                <div class="section-card glass glass-hover">
+                    <h2 class="section-title"><i class="fas fa-code"></i> প্রজেক্ট ও টুলস</h2>
+                    <div class="projects-grid">
+                        ${this.data.tools.map(tool => `
+                            <div class="project-card glass glass-hover" data-link="${tool.link || ''}">
+                                <div class="project-icon-wrapper">
+                                    <i class="fas fa-${tool.icon || 'code'}"></i>
+                                </div>
+                                <h3>${tool.name}</h3>
+                                <p>${tool.description}</p>
+                                ${tool.link ? `<span class="project-link-text"><i class="fas fa-external-link-alt"></i> দেখুন</span>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    buildFooter() {
+        return `
+            <div class="footer-bar">
+                <p>© <span id="currentYear"></span> | কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল <span>😉</span></p>
+                <button id="shareBtn" style="margin-top: 10px; padding: 8px 20px; background: rgba(124,58,237,0.2); border: 1px solid rgba(168,85,247,0.3); color: white; border-radius: 20px; cursor: pointer; font-family: inherit;">
+                    <i class="fas fa-share-alt"></i> শেয়ার
+                </button>
+            </div>
+        `;
+    }
+
+    buildNotificationArea() {
+        return '<div class="notification-container" id="notificationArea"></div>';
+    }
+
+    setupRain() {
+        const container = document.getElementById('rainContainer');
+        if (!container) return;
+
+        const dropCount = 100;
+        for (let i = 0; i < dropCount; i++) {
+            const drop = document.createElement('div');
+            drop.className = 'rain-drop';
+            drop.style.left = `${Math.random() * 100}%`;
+            drop.style.animationDuration = `${1 + Math.random() * 2}s`;
+            drop.style.animationDelay = `${Math.random() * 3}s`;
+            drop.style.height = `${15 + Math.random() * 25}px`;
+            drop.style.opacity = `${0.3 + Math.random() * 0.5}`;
+            container.appendChild(drop);
+        }
+    }
+
+    setupNavigation() {
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                const section = btn.getAttribute('href').replace('#', '');
+                const section = btn.dataset.section;
                 this.switchSection(section);
             });
-        });
-
-        // Copy UID
-        const uidElement = document.getElementById('freefireUID');
-        if (uidElement) {
-            uidElement.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.copyUID();
-            });
-        }
-
-        // Copyable contact items
-        document.querySelectorAll('.copyable').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const text = item.textContent.trim();
-                const type = item.dataset.copy || 'টেক্সট';
-                this.copyToClipboard(text, `${type} কপি করা হয়েছে`);
-            });
-        });
-
-        // Share button
-        const shareBtn = document.getElementById('shareBtn');
-        if (shareBtn) {
-            shareBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.shareWebsite();
-            });
-        }
-
-        // Handle hash
-        const hash = window.location.hash.replace('#', '');
-        if (hash) {
-            this.switchSection(hash);
-        }
-
-        window.addEventListener('hashchange', () => {
-            const newHash = window.location.hash.replace('#', '');
-            if (newHash) {
-                this.switchSection(newHash);
-            }
         });
     }
 
     switchSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll('.section').forEach(section => {
-            section.classList.remove('active');
-        });
-
-        // Show selected section
-        const targetSection = document.getElementById(sectionId);
-        if (targetSection) {
-            targetSection.classList.add('active');
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.classList.add('active');
         }
 
-        // Update active nav button
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.getAttribute('href') === `#${sectionId}`) {
-                btn.classList.add('active');
-            }
-        });
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.querySelector(`.nav-btn[data-section="${sectionId}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
 
         this.currentSection = sectionId;
+
+        // Animate skill bars when home section is shown
+        if (sectionId === 'home') {
+            setTimeout(() => this.animateSkillBars(), 100);
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    animateSkillBars() {
+        document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+            const targetWidth = bar.dataset.width;
+            setTimeout(() => {
+                bar.style.width = targetWidth;
+            }, 200);
+        });
+    }
+
     startImageRotation() {
-        if (this.profileImages.length <= 1) return;
+        if (this.images.length <= 1) return;
 
-        // Set initial image
-        this.changeProfileImage();
-
-        // Change image every 3 seconds
         this.imageInterval = setInterval(() => {
             this.changeProfileImage();
         }, 3000);
     }
 
     changeProfileImage() {
-        if (this.profileImages.length === 0) return;
+        if (this.images.length === 0) return;
 
-        const imageElement = document.getElementById('dynamicProfileImage');
-        if (!imageElement) return;
+        const imgElement = document.getElementById('profileImage');
+        if (!imgElement) return;
 
         let newIndex;
         do {
-            newIndex = Math.floor(Math.random() * this.profileImages.length);
-        } while (newIndex === this.currentImageIndex && this.profileImages.length > 1);
-        
-        this.currentImageIndex = newIndex;
-        const nextImage = this.profileImages[this.currentImageIndex];
+            newIndex = Math.floor(Math.random() * this.images.length);
+        } while (newIndex === this.currentImageIndex && this.images.length > 1);
 
-        // Preload image
-        const img = new Image();
-        img.onload = () => {
-            imageElement.style.opacity = '0';
-            
+        this.currentImageIndex = newIndex;
+        const newSrc = this.images[this.currentImageIndex];
+
+        const preload = new Image();
+        preload.onload = () => {
+            imgElement.style.opacity = '0';
             setTimeout(() => {
-                imageElement.src = nextImage;
-                imageElement.alt = `Profile Image ${this.currentImageIndex + 1}`;
-                imageElement.style.opacity = '1';
+                imgElement.src = newSrc;
+                imgElement.style.opacity = '1';
             }, 300);
         };
-        
-        img.onerror = () => {
-            this.currentImageIndex = (this.currentImageIndex + 1) % this.profileImages.length;
+        preload.onerror = () => {
+            this.currentImageIndex = (this.currentImageIndex + 1) % this.images.length;
         };
-        
-        img.src = nextImage;
+        preload.src = newSrc;
     }
 
-    copyUID() {
-        const uid = document.getElementById('freefireUID').textContent;
-        this.copyToClipboard(uid, 'FreeFire UID কপি করা হয়েছে!');
+    setupCopyListeners() {
+        document.addEventListener('click', (e) => {
+            const trigger = e.target.closest('.copy-trigger');
+            if (trigger) {
+                const text = trigger.dataset.copy;
+                const label = trigger.dataset.label || 'তথ্য';
+                if (text) {
+                    this.copyToClipboard(text, `${label} কপি করা হয়েছে!`);
+                }
+            }
+        });
+
+        // Project card links
+        document.addEventListener('click', (e) => {
+            const card = e.target.closest('.project-card');
+            if (card && card.dataset.link) {
+                window.open(card.dataset.link, '_blank');
+            }
+        });
     }
 
-    async copyToClipboard(text, successMessage = 'কপি করা হয়েছে!') {
+    setupShareButton() {
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#shareBtn')) {
+                if (navigator.share) {
+                    navigator.share({
+                        title: this.data?.personal?.name || 'Portfolio',
+                        text: 'আমার ব্যক্তিগত ওয়েবসাইট দেখুন',
+                        url: window.location.href
+                    }).catch(() => {});
+                } else {
+                    this.copyToClipboard(window.location.href, 'লিংক কপি হয়েছে! শেয়ার করুন।');
+                }
+            }
+        });
+    }
+
+    async copyToClipboard(text, message) {
         try {
             await navigator.clipboard.writeText(text);
-            this.showNotification(successMessage, 'success');
-        } catch (error) {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            
+            this.showToast('✅', message);
+        } catch {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
             try {
                 document.execCommand('copy');
-                this.showNotification(successMessage, 'success');
-            } catch (err) {
-                this.showNotification('কপি করতে ব্যর্থ হয়েছে', 'error');
+                this.showToast('✅', message);
+            } catch {
+                this.showToast('❌', 'কপি করতে ব্যর্থ হয়েছে');
             }
-            
-            document.body.removeChild(textArea);
+            document.body.removeChild(ta);
         }
     }
 
-    shareWebsite() {
-        if (navigator.share) {
-            navigator.share({
-                title: document.title,
-                text: 'আবদুল্লাহ আল মামুনের ব্যক্তিগত ওয়েবসাইট দেখুন',
-                url: window.location.href
-            });
-        } else {
-            this.copyToClipboard(window.location.href, 'লিংক কপি করা হয়েছে! শেয়ার করুন।');
-        }
-    }
+    showToast(icon, message) {
+        const area = document.getElementById('notificationArea');
+        if (!area) return;
 
-    updateCurrentYear() {
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-    }
-
-    showNotification(message, type = 'info') {
-        const notificationArea = document.getElementById('notificationArea');
-        if (!notificationArea) return;
-        
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        
-        const icon = type === 'success' ? '✅' : '❌';
-        
-        notification.innerHTML = `
-            <span class="notification-icon">${icon}</span>
-            <div class="notification-content">
-                <p>${message}</p>
-            </div>
-            <button class="notification-close">&times;</button>
+        const toast = document.createElement('div');
+        toast.className = 'notification-toast';
+        toast.innerHTML = `
+            <span class="toast-icon">${icon}</span>
+            <span class="toast-msg">${message}</span>
+            <button class="toast-close">✕</button>
         `;
-        
-        notificationArea.appendChild(notification);
-        
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 5000);
-        
-        notification.querySelector('.notification-close').addEventListener('click', () => {
-            notification.remove();
+
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.remove();
         });
+
+        area.appendChild(toast);
+
+        setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+        }, 4000);
+    }
+
+    updateYear() {
+        const yearEl = document.getElementById('currentYear');
+        if (yearEl) {
+            yearEl.textContent = new Date().getFullYear();
+        }
+    }
+
+    showError(message) {
+        const app = document.getElementById('app');
+        if (app) {
+            app.innerHTML = `
+                <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; color: white; text-align: center;">
+                    <div>
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #c084fc; margin-bottom: 20px;"></i>
+                        <p style="font-size: 1.2rem;">${message}</p>
+                        <p style="color: rgba(255,255,255,0.6); margin-top: 10px;">অনুগ্রহ করে a.json ফাইলটি চেক করুন</p>
+                    </div>
+                </div>
+            `;
+        }
     }
 }
 
-// Initialize immediately when script loads
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    window.websiteManager = new WebsiteManager();
-    console.log('✅ Website fully loaded and initialized');
-});
-
-// Fallback initialization
-window.addEventListener('load', () => {
-    if (!window.websiteManager) {
-        window.websiteManager = new WebsiteManager();
-        console.log('✅ WebsiteManager initialized on window load');
-    }
+    new PortfolioApp();
 });

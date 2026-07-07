@@ -85,49 +85,49 @@
     {
       "name": "Nebula Bypass",
       "description": "Advance bookmarklet for bypass multiple website ads",
-      "icon": "fa-user",
+      "icon": "fa-compress",
       "link": "https://nebula-bot-8afg.onrender.com"
     },
     {
       "name": "এনক্রিপশন ডিক্রিপশন টুল",
       "description": "আপনার টেক্সট সুরক্ষিতভাবে এনক্রিপ্ট এবং ডিক্রিপ্ট করুন base64 & AES",
-      "icon": "security",
+      "icon": "fa-shield",
       "link": "/p/encrypt.html"
     },
     {
-      "name": "wificonfigstore.xm Analyzer",
-      "description": "View all saved wifi passwords on your rooted device",
-      "icon": "",
+      "name": "Saved Wifi Analyzer",
+      "description": "View all saved wifi passwords on your rooted device. file wificonfigstore.xml",
+      "icon": "fa-wifi",
       "link": "/p/wifi.html"
     },
     {
       "name": "Hagu Agent",
       "description": "ফালতু একটা AI chatbot যা আপনি মাগনা ইউজ করতে পারেন কিন্তু এটা আপনার কাজে দেবে না",
-      "icon": "",
+      "icon": "fa-comments",
       "link": "/p/hagu.html"
     },
     {
       "name": "Love ভাষা এনকোডার",
       "description": "এটা নিব্বা নিব্বীদের কাজে লাগবে আপনার না",
-      "icon": "",
+      "icon": "fa-heart",
       "link": "/p/l.html"
     },
     {
       "name": "ফ্রী wifi",
       "description": "আমার ফোনের কয়টা wifi লিস্ট। বারবার হারিয়ে যায় তাই এখানে রাখলাম 🙂",
-      "icon": "",
+      "icon": "fa-wifi",
       "link": "/p/swp.html"
     },
     {
       "name": "জীবন উন্নতির দিনলিপি",
       "description": "একটা রুটিন যা আপনার ফলো করা উচিত",
-      "icon": "",
+      "icon": "fa-sticky-note",
       "link": "/p/routine.html"
     },
     {
       "name": "Tic Tac Toe গেম",
       "description": "হুদাই অনেক আগে বানাইছিলম",
-      "icon": "",
+      "icon": "fa-gamepad",
       "link": "/p/ttt.html"
     }
   ],

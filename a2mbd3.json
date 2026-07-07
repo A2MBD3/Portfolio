@@ -52,8 +52,8 @@
     "apiEndpoint": "https://u.a2mbd3.workers.dev/",
     "fields": [
       {"name": "name", "label": "আপনার নাম", "type": "text", "required": true, "placeholder": "আপনার নাম লিখুন"},
-      {"name": "email", "label": "ইমেইল", "type": "email", "required": true, "placeholder": "আপনার ইমেইল লিখুন"},
-      {"name": "subject", "label": "বিষয়", "type": "text", "required": false, "placeholder": "বিষয় (ঐচ্ছিক)"},
+      {"name": "email", "label": "ইমেইল", "type": "email", "required": false, "placeholder": "আপনার ইমেইল লিখুন"},
+      {"name": "subject", "label": "বিষয়", "type": "text", "required": false, "placeholder": "বিষয়"},
       {"name": "message", "label": "মেসেজ", "type": "textarea", "required": true, "placeholder": "আপনার মেসেজ লিখুন"}
     ],
     "submitButtonText": "মেসেজ পাঠান",

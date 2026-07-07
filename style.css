@@ -782,7 +782,11 @@ body {
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
     html {
-        font-size: 14px;
+        font-size: 16px;
+    }
+    
+    #app {
+        padding: 15px;
     }
     
     .profile-card-inner {
@@ -808,7 +812,7 @@ body {
     }
     
     .projects-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
     
     .freefire-uid {
@@ -821,6 +825,18 @@ body {
 }
 
 @media (max-width: 480px) {
+    html {
+        font-size: 16px;
+    }
+    
+    #app {
+        padding: 10px;
+    }
+    
+    .profile-section {
+        padding: 40px 15px 30px;
+    }
+    
     .profile-card-inner {
         width: 220px;
         height: 220px;
@@ -839,15 +855,25 @@ body {
         font-size: 1.8rem;
     }
     
+    .section-card {
+        padding: 18px;
+        margin-bottom: 15px;
+    }
+    
+    .section-title {
+        font-size: 1.4rem;
+    }
+    
     .nav-container {
         gap: 4px;
         padding: 6px;
+        bottom: 15px;
     }
     
     .nav-btn {
-        padding: 8px 12px;
-        font-size: 0.75rem;
-        gap: 4px;
+        padding: 10px 14px;
+        font-size: 0.8rem;
+        gap: 5px;
     }
     
     .profile-details-row {
@@ -856,13 +882,21 @@ body {
     }
     
     .contact-row {
-        flex-direction: column;
-        text-align: center;
+        padding: 14px 16px;
+    }
+    
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
     }
     
     .social-link-btn {
-        width: 45px;
-        height: 45px;
+        width: 48px;
+        height: 48px;
         font-size: 1.2rem;
+    }
+    
+    .footer-bar {
+        padding: 20px 15px 90px;
     }
 }

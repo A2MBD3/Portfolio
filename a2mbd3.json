@@ -75,11 +75,13 @@
     "গান শোনা"
   ],
   "skills": [
-    {"name": "HTML/CSS", "level": 60},
-    {"name": "JavaScript", "level": 13},
-    {"name": "React", "level": 3},
-    {"name": "C/C++", "level": 9},
-    {"name": "Python", "level": 30}
+    {"name": "Freefire", "level": 100},
+    {"name": "Java Game", "level": 98},
+    {"name": "Scarfall 2.0", "level": 70},
+    {"name": "PUBG", "level": 50},
+    {"name": "Call Of Duty", "level": 25},
+    {"name": "Delta Force", "level": 6}
+    
   ],
   "tools": [
     {
@@ -133,11 +135,9 @@
   ],
   "images": {
     "profile": [
-      "https://lh3.googleusercontent.com/pw/AP1GczNIgSz588M2Ld4O5KyyB3-cKwB12vs_6iCVsVe9UUzaaRmjeWgyOaRGXOboBU07RzHGk_W1UyqwTEqOVyrR22y_cHTCdph8ZgWtqgCsXE7_Bok3ttCpRmt4vDH2sruwBCgKhYCg1tBvnDxswoilubQWhg=w721-h988-s-no-gm?authuser=0",
-      "https://lh3.googleusercontent.com/pw/AP1GczOG-NFdCVVJVwZqwsPo79rEl8nJEKYH0TVPUQyqgAIByT3qQ1hnHKSX3uNpSZtpushccB4NmvVAzL6C1hIQhfeXK5JG1ZHp9qVyxH_5nl6TTkkc4bgbi-HKAfahj4fMECgTOrGvVmL9hbEztJXb5_xPvw=w721-h988-s-no-gm?authuser=0",
-      "https://lh3.googleusercontent.com/pw/AP1GczMlkZgEkgImmlwjx2mf-P3J3NEU0cdkePSGb5eLGCNLEmUYwO1fa7fj-OkdFLhqsEY3U_QWOo1ceFhaYFQknaSrArft4_xdQlglxjhnJbS2uPgCYfIEE1S-4rgV4tt137EpybOFRvwUyOWWz6D5AWQRDg=w721-h988-s-no-gm?authuser=0"
+      "/assets/profile-default.png"
     ],
-    "freefire_bg": ""
+    "freefire_bg": "/assets/freefire-bg.jpg"
   },
   "navigation": [
     {"label": "হোম", "icon": "fa-home", "section": "home"},

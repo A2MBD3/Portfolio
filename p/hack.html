@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সিস্টেম সিকিউরিটি স্ক্যান</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: #0a0a0a;
+            color: #0f0;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .container {
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f00;
+            text-shadow: 0 0 10px #f00;
+        }
+        
+        .status {
+            color: #0f0;
+            font-size: 14px;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .terminal {
+            flex-grow: 1;
+            background-color: #000;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            overflow-y: auto;
+            font-size: 16px;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+        
+        .terminal-line {
+            margin-bottom: 10px;
+            animation: type 0.05s linear;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        @keyframes type {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .prompt {
+            color: #0f0;
+        }
+        
+        .user {
+            color: #0af;
+        }
+        
+        .path {
+            color: #ff0;
+        }
+        
+        .command {
+            color: #fff;
+        }
+        
+        .output {
+            color: #0f0;
+        }
+        
+        .warning {
+            color: #ff0;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .danger {
+            color: #f00;
+            text-shadow: 0 0 5px #f00;
+            font-weight: bold;
+            animation: dangerPulse 0.5s infinite;
+        }
+        
+        @keyframes dangerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .success {
+            color: #0f0;
+        }
+        
+        .highlight {
+            color: #0ff;
+        }
+        
+        .scanning {
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .scanning:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #0f0;
+            animation: scanning 1s infinite;
+        }
+        
+        @keyframes scanning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .footer {
+            border-top: 1px solid #0f0;
+            padding-top: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .glitch {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.03);
+            pointer-events: none;
+            opacity: 0;
+            animation: glitchEffect 5s infinite;
+        }
+        
+        @keyframes glitchEffect {
+            0%, 95% { opacity: 0; }
+            96%, 98% { opacity: 0.1; }
+            97%, 99% { opacity: 0.05; }
+            100% { opacity: 0; }
+        }
+        
+        .final-message {
+            font-size: 28px;
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            border: 2px solid #f00;
+            background-color: rgba(255, 0, 0, 0.1);
+            animation: finalMessage 1s infinite alternate;
+        }
+        
+        @keyframes finalMessage {
+            from { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+            to { transform: scale(1.02); box-shadow: 0 0 30px rgba(255, 0, 0, 0.8); }
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background-color: #333;
+            margin-bottom: 10px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #f00;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .access-granted {
+            color: #f00;
+            font-size: 20px;
+            text-align: center;
+            animation: accessGranted 2s infinite;
+        }
+        
+        @keyframes accessGranted {
+            0%, 100% { text-shadow: 0 0 10px #f00; }
+            50% { text-shadow: 0 0 20px #f00, 0 0 30px #f00; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glitch"></div>
+    <div class="container">
+        <div class="header">
+            <div class="logo">root@hackerserver:~#</div>
+            <div class="status">[CONNECTED] [ACTIVE] [LIVE FEED]</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div class="terminal" id="terminal">
+            <!-- টার্মিনাল আউটপুট এখানে জেনারেট হবে -->
+        </div>
+        
+        <div class="footer">
+            SYSTEM INTRUSION DETECTED | TARGET ACQUIRED | DATA EXFILTRATION IN PROGRESS
+        </div>
+    </div>
+
+    <script>
+        // টার্মিনাল এলিমেন্ট
+        const terminal = document.getElementById('terminal');
+        const progressBar = document.getElementById('progress');
+        
+        // প্রি-লোডেড মেসেজের লিস্ট
+        const messages = [
+            {text: "Initializing intrusion protocol...", type: "output", delay: 800},
+            {text: "Connecting to target device...", type: "output", delay: 600},
+            {text: "root@hackerserver:~# ssh target_device", type: "command", delay: 500},
+            {text: "Connection established. Authentication bypassed.", type: "success", delay: 700},
+            {text: "Scanning device network...", type: "output", delay: 600},
+            {text: "Target IP: 192.168.1.105", type: "highlight", delay: 500},
+            {text: "Device type: MOBILE PHONE - DETECTED", type: "warning", delay: 700},
+            {text: "Manufacturer: Motorola", type: "output", delay: 500},
+            {text: "Model: Moto G85 - CONFIRMED", type: "warning", delay: 600},
+            {text: "OS: Android 15", type: "output", delay: 500},
+            {text: "Location tracking enabled...", type: "output", delay: 700},
+            {text: "Location: BANGLADESH - DETECTED", type: "warning", delay: 800},
+            {text: "City: Pirojpur", type: "output", delay: 500},
+            {text: "GPS Coordinates: 23.8103° N, 90.4125° E", type: "highlight", delay: 700},
+            {text: "Accessing device storage...", type: "output", delay: 800},
+            {text: "Bypassing encryption...", type: "warning", delay: 700},
+            {text: "Encryption bypassed successfully!", type: "success", delay: 600},
+            {text: "Scanning for media files...", type: "output", delay: 800},
+            {text: "Photos found: 1,247 files", type: "danger", delay: 700},
+            {text: "Videos found: 89 files", type: "danger", delay: 600},
+            {text: "Documents found: 156 files", type: "danger", delay: 600},
+            {text: "Accessing gallery...", type: "output", delay: 700},
+            {text: "Downloading personal photos...", type: "warning", delay: 800},
+            {text: "Download progress: 25%", type: "output", delay: 600},
+            {text: "Download progress: 58%", type: "output", delay: 600},
+            {text: "Download progress: 92%", type: "output", delay: 600},
+            {text: "Photos downloaded successfully!", type: "success", delay: 700},
+            {text: "Accessing camera roll...", type: "output", delay: 700},
+            {text: "Recent selfies detected...", type: "danger", delay: 800},
+            {text: "Private videos detected...", type: "danger", delay: 700},
+            {text: "Extracting sensitive data...", type: "warning", delay: 800},
+            {text: "Accessing contacts...", type: "output", delay: 700},
+            {text: "Contacts downloaded: 187", type: "danger", delay: 600},
+            {text: "Accessing messages...", type: "output", delay: 700},
+            {text: "WhatsApp messages extracting...", type: "warning", delay: 800},
+            {text: "Facebook messages accessed...", type: "danger", delay: 700},
+            {text: "Accessing social media accounts...", type: "output", delay: 800},
+            {text: "Facebook: LOGGED IN", type: "danger", delay: 700},
+            {text: "Instagram: LOGGED IN", type: "danger", delay: 700},
+            {text: "Gmail: ACCESS GRANTED", type: "danger", delay: 700},
+            {text: "Banking apps detected...", type: "warning", delay: 900},
+            {text: "Attempting financial data extraction...", type: "danger", delay: 800},
+            {text: "Credit card information found!", type: "danger", delay: 1000},
+            {text: "Preparing data package for exfiltration...", type: "output", delay: 800},
+            {text: "root@hackerserver:~# send_data --target server.cybercrime.net --all", type: "command", delay: 700},
+            {text: "Sending photos to remote server...", type: "warning", delay: 800},
+            {text: "Sending videos to remote server...", type: "warning", delay: 800},
+            {text: "Sending personal documents...", type: "warning", delay: 800},
+            {text: "Sending contact list...", type: "warning", delay: 800},
+            {text: "Sending message history...", type: "warning", delay: 800},
+            {text: "Sending location data...", type: "warning", delay: 800},
+            {text: "Data transmission: 75% complete", type: "output", delay: 700},
+            {text: "Data transmission: 100% complete", type: "success", delay: 1000},
+            {text: "All data successfully uploaded to remote server!", type: "success", delay: 1200},
+            {text: "Cleaning traces...", type: "output", delay: 800},
+            {text: "Intrusion logs deleted", type: "output", delay: 600},
+            {text: "Connection history wiped", type: "output", delay: 600},
+            {text: "root@hackerserver:~# exit", type: "command", delay: 700},
+            {text: "Connection closed.", type: "output", delay: 1000},
+        ];
+        
+        // ফাইনাল ভয়ের মেসেজ
+        const finalMessages = [
+            "╔══════════════════════════════════════════════╗",
+            "║                                              ║",
+            "║           SYSTEM INTRUSION COMPLETE         ║",
+            "║                                              ║",
+            "║         TARGET: SAIKAT (Moto G85)           ║",
+            "║         LOCATION: BANGLADESH                ║",
+            "║         STATUS: FULLY COMPROMISED           ║",
+            "║                                              ║",
+            "║    ALL PERSONAL DATA HAS BEEN STOLEN        ║",
+            "║    PHOTOS, VIDEOS, MESSAGES EXPOSED         ║",
+            "║    BANK DETAILS EXTRACTED                   ║",
+            "║                                              ║",
+            "║                                              ║",
+            "║           SAIKAT, YOU ARE FUCKED!           ║",
+            "║     ALL PHOTOS & VIDEOS SENT TO SERVER!     ║",
+            "║                                              ║",
+            "║       THIS WAS A WARNING FROM CYBER         ║",
+            "║         SECURITY RESEARCH TEAM              ║",
+            "║                                              ║",
+            "╚══════════════════════════════════════════════╝"
+        ];
+        
+        let messageIndex = 0;
+        let progress = 0;
+        
+        // টাইপিং এফেক্ট সহ মেসেজ শো করার ফাংশন
+        function showNextMessage() {
+            if (messageIndex < messages.length) {
+                const msg = messages[messageIndex];
+                const line = document.createElement('div');
+                line.className = 'terminal-line';
+                
+                // মেসেজ টাইপ অনুযায়ী ক্লাস সেট
+                if (msg.type === 'command') {
+                    line.innerHTML = `<span class="prompt">root@hackerserver:~# </span><span class="command">${msg.text.replace('root@hackerserver:~# ', '')}</span>`;
+                } else if (msg.type === 'warning') {
+                    line.innerHTML = `<span class="warning">${msg.text}</span>`;
+                } else if (msg.type === 'danger') {
+                    line.innerHTML = `<span class="danger">${msg.text}</span>`;
+                } else if (msg.type === 'success') {
+                    line.innerHTML = `<span class="success">${msg.text}</span>`;
+                } else if (msg.type === 'highlight') {
+                    line.innerHTML = `<span class="highlight">${msg.text}</span>`;
+                } else {
+                    line.innerHTML = `<span class="output">${msg.text}</span>`;
+                }
+                
+                terminal.appendChild(line);
+                terminal.scrollTop = terminal.scrollHeight;
+                
+                // প্রোগ্রেস বার আপডেট
+                progress = Math.floor((messageIndex / messages.length) * 100);
+                progressBar.style.width = `${progress}%`;
+                
+                messageIndex++;
+                
+                // পরবর্তী মেসেজের জন্য ডিলে
+                setTimeout(showNextMessage, msg.delay);
+            } else {
+                // সব মেসেজ শেষ হলে ফাইনাল মেসেজ শো
+                setTimeout(showFinalMessage, 1000);
+            }
+        }
+        
+        // ফাইনাল ভয়ের মেসেজ শো করার ফাংশন
+        function showFinalMessage() {
+            // প্রোগ্রেস বার 100% সেট
+            progressBar.style.width = '100%';
+            
+            // টার্মিনাল ক্লিয়ার
+            terminal.innerHTML = '';
+            
+            // অ্যাক্সেস গ্রান্টেড মেসেজ
+            const accessMsg = document.createElement('div');
+            accessMsg.className = 'access-granted';
+            accessMsg.textContent = 'ACCESS GRANTED - TARGET FULLY COMPROMISED';
+            terminal.appendChild(accessMsg);
+            
+            setTimeout(() => {
+                // ফাইনাল মেসেজ টাইপিং এফেক্ট সহ শো
+                typeFinalMessage(0);
+            }, 2000);
+        }
+        
+        // ফাইনাল মেসেজ টাইপিং এফেক্ট
+        function typeFinalMessage(lineIndex) {
+            if (lineIndex < finalMessages.length) {
+                const line = document.createElement('div');
+                line.className = 'terminal-line danger';
+                line.textContent = finalMessages[lineIndex];
+                terminal.appendChild(line);
+                terminal.scrollTop = terminal.scrollHeight;
+                
+                setTimeout(() => {
+                    typeFinalMessage(lineIndex + 1);
+                }, 300);
+            } else {
+                // সবশেষে ফাইনাল এনিমেশন
+                const finalDiv = document.createElement('div');
+                finalDiv.className = 'final-message danger';
+                finalDiv.textContent = "SAIKAT, YOU ARE FUCKED! ALL PHOTOS & VIDEOS SENT TO SERVER!";
+                terminal.appendChild(finalDiv);
+                
+                // র্যান্ডম গ্লিচ এফেক্ট
+                setInterval(() => {
+                    if (Math.random() > 0.7) {
+                        document.querySelector('.glitch').style.opacity = Math.random() * 0.1;
+                        setTimeout(() => {
+                            document.querySelector('.glitch').style.opacity = 0;
+                        }, 100);
+                    }
+                }, 300);
+            }
+        }
+        
+        // স্ক্রিপ্ট শুরু হওয়ার পর 1 সেকেন্ড পর মেসেজ শো শুরু
+        setTimeout(() => {
+            showNextMessage();
+        }, 1000);
+        
+        // পেজ লোড হওয়ার সময় কিছু র্যান্ডম এফেক্ট
+        window.addEventListener('load', () => {
+            // র্যান্ডম টার্মিনাল ফ্লিকার এফেক্ট
+            setInterval(() => {
+                if (Math.random() > 0.8) {
+                    terminal.style.opacity = 0.95;
+                    setTimeout(() => {
+                        terminal.style.opacity = 1;
+                    }, 50);
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

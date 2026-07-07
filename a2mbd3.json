@@ -4,6 +4,10 @@
     "description": "আবদুল্লাহ আল মামুন",
     "lang": "bn"
   },
+  "owner": {
+    "id": "8074495633",
+    "name": "আবদুল্লাহ আল মামুন"
+  },
   "theme": {
     "primaryColor": "#7c3aed",
     "secondaryColor": "#a855f7",
@@ -12,6 +16,7 @@
     "surfaceColor": "#1a0030",
     "fontFamily": "'Hind Siliguri', 'Poppins', sans-serif",
     "glassEffect": true,
+    "glassOpacity": 0.03,
     "rainEffect": true,
     "rainDropCount": 100
   },
@@ -32,16 +37,28 @@
     {"icon": "fa-map-marker-alt", "label": "বরিশাল, বাংলাদেশ"}
   ],
   "aboutItems": [
-    {"icon": "fa-book", "text": "পড়াশোনা: বিজ্ঞান বিভাগ"},
+    {"icon": "fa-book", "text": "পড়াশোনা: উচ্চমাধ্যমিক"},
     {"icon": "fa-bullseye", "text": "লক্ষ্য: অনির্ধারিত"},
     {"icon": "fa-heart", "text": "প্যাশন: নতুন টেকনোলজি শেখা"},
-    {"icon": "fa-university", "text": "কলেজ: শহীদ স্মৃতি ডিগ্রী কলেজ"},
     {"icon": "fa-building", "text": "ডিপার্টমেন্ট: বিজ্ঞান"}
   ],
   "contact": {
     "email": "aam.abdullah1@hotmail.com",
     "address": "বরিশাল, বাংলাদেশ",
     "freefire": "7236610758"
+  },
+  "contactForm": {
+    "enabled": true,
+    "apiEndpoint": "https://u.a2mbd3.workers.dev/",
+    "fields": [
+      {"name": "name", "label": "আপনার নাম", "type": "text", "required": true, "placeholder": "আপনার নাম লিখুন"},
+      {"name": "email", "label": "ইমেইল", "type": "email", "required": true, "placeholder": "আপনার ইমেইল লিখুন"},
+      {"name": "subject", "label": "বিষয়", "type": "text", "required": false, "placeholder": "বিষয় (ঐচ্ছিক)"},
+      {"name": "message", "label": "মেসেজ", "type": "textarea", "required": true, "placeholder": "আপনার মেসেজ লিখুন"}
+    ],
+    "submitButtonText": "মেসেজ পাঠান",
+    "successMessage": "মেসেজ সফলভাবে পাঠানো হয়েছে!",
+    "errorMessage": "মেসেজ পাঠাতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"
   },
   "social": [
     {"name": "GitHub", "icon": "fa-github", "url": "https://github.com/A2MBD3", "color": "#333333"},
@@ -72,10 +89,46 @@
       "link": "https://nebula-bot-8afg.onrender.com"
     },
     {
-      "name": "আবহাওয়া",
-      "description": "রিয়েল-টাইম আবহাওয়া আপডেট",
-      "icon": "fa-cloud-sun",
-      "link": "https://live8.bmd.gov.bd/p/Weather-Forecast"
+      "name": "এনক্রিপশন ডিক্রিপশন টুল",
+      "description": "আপনার টেক্সট সুরক্ষিতভাবে এনক্রিপ্ট এবং ডিক্রিপ্ট করুন base64 & AES",
+      "icon": "security",
+      "link": "/p/encrypt.html"
+    },
+    {
+      "name": "wificonfigstore.xm Analyzer",
+      "description": "View all saved wifi passwords on your rooted device",
+      "icon": "",
+      "link": "/p/wifi.html"
+    },
+    {
+      "name": "Hagu Agent",
+      "description": "ফালতু একটা AI chatbot যা আপনি মাগনা ইউজ করতে পারেন কিন্তু এটা আপনার কাজে দেবে না",
+      "icon": "",
+      "link": "/p/hagu.html"
+    },
+    {
+      "name": "Love ভাষা এনকোডার",
+      "description": "এটা নিব্বা নিব্বীদের কাজে লাগবে আপনার না",
+      "icon": "",
+      "link": "/p/l.html"
+    },
+    {
+      "name": "ফ্রী wifi",
+      "description": "আমার ফোনের কয়টা wifi লিস্ট। বারবার হারিয়ে যায় তাই এখানে রাখলাম 🙂",
+      "icon": "",
+      "link": "/p/swp.html"
+    },
+    {
+      "name": "জীবন উন্নতির দিনলিপি",
+      "description": "একটা রুটিন যা আপনার ফলো করা উচিত",
+      "icon": "",
+      "link": "/p/routine.html"
+    },
+    {
+      "name": "Tic Tac Toe গেম",
+      "description": "হুদাই অনেক আগে বানাইছিলম",
+      "icon": "",
+      "link": "/p/ttt.html"
     }
   ],
   "images": {
@@ -84,7 +137,7 @@
       "https://lh3.googleusercontent.com/pw/AP1GczOG-NFdCVVJVwZqwsPo79rEl8nJEKYH0TVPUQyqgAIByT3qQ1hnHKSX3uNpSZtpushccB4NmvVAzL6C1hIQhfeXK5JG1ZHp9qVyxH_5nl6TTkkc4bgbi-HKAfahj4fMECgTOrGvVmL9hbEztJXb5_xPvw=w721-h988-s-no-gm?authuser=0",
       "https://lh3.googleusercontent.com/pw/AP1GczMlkZgEkgImmlwjx2mf-P3J3NEU0cdkePSGb5eLGCNLEmUYwO1fa7fj-OkdFLhqsEY3U_QWOo1ceFhaYFQknaSrArft4_xdQlglxjhnJbS2uPgCYfIEE1S-4rgV4tt137EpybOFRvwUyOWWz6D5AWQRDg=w721-h988-s-no-gm?authuser=0"
     ],
-    "freefire_bg": "assets/freefire-bg.jpg"
+    "freefire_bg": ""
   },
   "navigation": [
     {"label": "হোম", "icon": "fa-home", "section": "home"},

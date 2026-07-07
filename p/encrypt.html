@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>এনক্রিপশন টুল</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3f51b5;
+            --primary-light: #757de8;
+            --primary-dark: #002984;
+            --secondary: #ff4081;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --dark: #212121;
+            --light: #f5f5f5;
+            --gray: #757575;
+            --gray-light: #e0e0e0;
+            --border-radius: 4px;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 8px rgba(0,0,0,0.15), 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .text-areas {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .text-area-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-area-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .text-area-label .material-icons {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            resize: vertical;
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
+        }
+
+        .output-container textarea {
+            background: var(--light);
+        }
+
+        .controls {
+            padding: 0 20px 20px;
+        }
+
+        .mode-selector {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 1px solid var(--gray-light);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .mode-option {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            font-weight: 500;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mode-option .material-icons {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        .mode-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .mode-option:not(.active):hover {
+            background: rgba(63, 81, 181, 0.1);
+        }
+
+        .options-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .option-group {
+            flex: 1;
+        }
+
+        .option-label {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-label .material-icons {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+
+        .encryption-types {
+            display: flex;
+            gap: 8px;
+        }
+
+        .encryption-type {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .encryption-type .material-icons {
+            font-size: 16px;
+            margin-right: 5px;
+        }
+
+        .encryption-type.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 2px 4px rgba(63, 81, 181, 0.3);
+        }
+
+        .encryption-type:not(.active):hover {
+            background: rgba(63, 81, 181, 0.1);
+            border-color: var(--primary-light);
+        }
+
+        .password-section {
+            display: none;
+        }
+
+        .password-section.active {
+            display: block;
+        }
+
+        .password-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .password-option {
+            flex: 1;
+            min-width: calc(33.333% - 8px);
+            padding: 10px 5px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .password-option.active {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+            box-shadow: 0 2px 4px rgba(255, 64, 129, 0.3);
+        }
+
+        .password-option:not(.active):hover {
+            background: rgba(255, 64, 129, 0.1);
+            border-color: var(--secondary);
+        }
+
+        .custom-password {
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .custom-password input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius);
+            font-size: 13px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .custom-password input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.2);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .action-btn:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-1px);
+        }
+
+        .action-btn:active {
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transform: translateY(0);
+        }
+
+        .action-btn .material-icons {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        .copy-btn {
+            background: var(--success);
+        }
+
+        .copy-btn:hover {
+            background: #43a047;
+        }
+
+        .clear-btn {
+            background: var(--danger);
+        }
+
+        .clear-btn:hover {
+            background: #e53935;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 18px;
+            background: var(--success);
+            color: white;
+            border-radius: var(--border-radius);
+            transform: translateX(150%);
+            transition: transform 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification .material-icons {
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .text-areas {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .options-row {
+                flex-direction: column;
+            }
+            
+            .password-option {
+                min-width: calc(50% - 8px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 4px;
+            }
+            
+            .text-areas, .controls {
+                padding: 12px;
+            }
+            
+            .encryption-types {
+                flex-wrap: wrap;
+            }
+            
+            .encryption-type {
+                min-width: calc(50% - 4px);
+            }
+            
+            .password-options {
+                flex-wrap: wrap;
+            }
+            
+            .password-option {
+                min-width: calc(50% - 4px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>এনক্রিপশন টুল</h1>
+            <p>আপনার টেক্সট সুরক্ষিতভাবে এনক্রিপ্ট এবং ডিক্রিপ্ট করুন</p>
+        </div>
+        
+        <div class="text-areas">
+            <div class="text-area-container input-container">
+                <div class="text-area-label">
+                    <span class="material-icons">keyboard</span>
+                    ইনপুট টেক্সট
+                </div>
+                <textarea id="input-text" placeholder="এখানে আপনার টেক্সট লিখুন..."></textarea>
+            </div>
+            
+            <div class="text-area-container output-container">
+                <div class="text-area-label">
+                    <span class="material-icons">lock</span>
+                    আউটপুট টেক্সট
+                </div>
+                <textarea id="output-text" readonly placeholder="এখানে ফলাফল দেখানো হবে..."></textarea>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="mode-selector">
+                <button class="mode-option active" data-mode="encode">
+                    <span class="material-icons">lock</span>
+                    এনক্রিপ্ট
+                </button>
+                <button class="mode-option" data-mode="decode">
+                    <span class="material-icons">lock_open</span>
+                    ডিক্রিপ্ট
+                </button>
+            </div>
+            
+            <div class="options-row">
+                <div class="option-group">
+                    <div class="option-label">
+                        <span class="material-icons">security</span>
+                        এনক্রিপশন টাইপ
+                    </div>
+                    <div class="encryption-types">
+                        <button class="encryption-type active" data-type="base64">
+                            <span class="material-icons">code</span>
+                            Base64
+                        </button>
+                        <button class="encryption-type" data-type="aes">
+                            <span class="material-icons">enhanced_encryption</span>
+                            AES
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="option-group password-section" id="password-section">
+                    <div class="option-label">
+                        <span class="material-icons">vpn_key</span>
+                        পাসওয়ার্ড
+                    </div>
+                    <div class="password-options">
+                        <button class="password-option active" data-password="am">am</button>
+                        <button class="password-option" data-password="abdullah">abdullah</button>
+                        <button class="password-option" data-password="secret">secret</button>
+                        <button class="password-option" data-password="password">password</button>
+                        <button class="password-option" data-password="123456">123456</button>
+                        <button class="password-option" data-password="custom">কাস্টম</button>
+                    </div>
+                    <div class="custom-password">
+                        <input type="text" id="custom-password-input" placeholder="আপনার কাস্টম পাসওয়ার্ড লিখুন">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn copy-btn" id="copy-btn">
+                    <span class="material-icons">content_copy</span>
+                    কপি করুন
+                </button>
+                <button class="action-btn clear-btn" id="clear-btn">
+                    <span class="material-icons">clear</span>
+                    ক্লিয়ার করুন
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <span class="material-icons">check_circle</span>
+        কপি করা হয়েছে!
+    </div>
+
+    <script>
+        // DOM elements
+        const modeOptions = document.querySelectorAll('.mode-option');
+        const encryptionTypes = document.querySelectorAll('.encryption-type');
+        const passwordSection = document.getElementById('password-section');
+        const passwordOptions = document.querySelectorAll('.password-option');
+        const customPasswordInput = document.getElementById('custom-password-input');
+        const inputText = document.getElementById('input-text');
+        const outputText = document.getElementById('output-text');
+        const copyBtn = document.getElementById('copy-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const notification = document.getElementById('notification');
+
+        // Selected options
+        let selectedMode = 'encode';
+        let selectedEncryption = 'base64';
+        let selectedPassword = 'am';
+        let isCustomPassword = false;
+
+        // Initialize
+        customPasswordInput.style.display = 'none';
+
+        // Mode selection
+        modeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                modeOptions.forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                selectedMode = option.getAttribute('data-mode');
+                processText();
+            });
+        });
+
+        // Encryption type selection
+        encryptionTypes.forEach(type => {
+            type.addEventListener('click', () => {
+                encryptionTypes.forEach(t => t.classList.remove('active'));
+                type.classList.add('active');
+                selectedEncryption = type.getAttribute('data-type');
+                
+                // Show/hide password section
+                if (selectedEncryption === 'aes') {
+                    passwordSection.classList.add('active');
+                } else {
+                    passwordSection.classList.remove('active');
+                }
+                
+                processText();
+            });
+        });
+
+        // Password option selection
+        passwordOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                passwordOptions.forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                selectedPassword = option.getAttribute('data-password');
+                isCustomPassword = selectedPassword === 'custom';
+                
+                // Show/hide custom password input
+                customPasswordInput.style.display = isCustomPassword ? 'block' : 'none';
+                processText();
+            });
+        });
+
+        // Debounced processing for better performance
+        let processTimeout;
+        function processText() {
+            clearTimeout(processTimeout);
+            processTimeout = setTimeout(() => {
+                const text = inputText.value.trim();
+                if (!text) {
+                    outputText.value = '';
+                    return;
+                }
+
+                const password = isCustomPassword ? customPasswordInput.value : selectedPassword;
+
+                try {
+                    let result;
+                    if (selectedMode === 'encode') {
+                        switch (selectedEncryption) {
+                            case 'base64':
+                                result = btoa(unescape(encodeURIComponent(text)));
+                                break;
+                            case 'aes':
+                                if (!password) {
+                                    result = 'পাসওয়ার্ড প্রয়োজন';
+                                } else {
+                                    result = CryptoJS.AES.encrypt(text, password).toString();
+                                }
+                                break;
+                        }
+                    } else {
+                        switch (selectedEncryption) {
+                            case 'base64':
+                                try {
+                                    let decoded = atob(text);
+                                    try {
+                                        result = decodeURIComponent(escape(decoded));
+                                    } catch (e) {
+                                        result = decoded;
+                                    }
+                                } catch (e) {
+                                    result = 'ভুল Base64 টেক্সট';
+                                }
+                                break;
+                            case 'aes':
+                                if (!password) {
+                                    result = 'পাসওয়ার্ড প্রয়োজন';
+                                } else {
+                                    try {
+                                        const bytes = CryptoJS.AES.decrypt(text, password);
+                                        result = bytes.toString(CryptoJS.enc.Utf8);
+                                        if (!result) {
+                                            result = 'ভুল পাসওয়ার্ড';
+                                        }
+                                    } catch (e) {
+                                        result = 'ডিক্রিপ্ট ব্যর্থ';
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    outputText.value = result || '';
+                } catch (error) {
+                    outputText.value = 'ত্রুটি: ' + error.message;
+                }
+            }, 100);
+        }
+
+        // Event listeners
+        inputText.addEventListener('input', processText);
+        customPasswordInput.addEventListener('input', processText);
+
+        // Copy function
+        copyBtn.addEventListener('click', () => {
+            if (outputText.value) {
+                outputText.select();
+                document.execCommand('copy');
+                
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 1500);
+            }
+        });
+
+        // Clear function
+        clearBtn.addEventListener('click', () => {
+            inputText.value = '';
+            outputText.value = '';
+            inputText.focus();
+        });
+
+        // Auto-focus input
+        inputText.focus();
+    </script>
+</body>
+</html>

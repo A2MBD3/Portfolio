@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Liquid Glass WiFi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Liquid Glass Modern Mobile Design */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-highlight: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.85);
+            --text-tertiary: rgba(255, 255, 255, 0.7);
+            --blur-amount: 12px;
+            --radius-large: 24px;
+            --radius-medium: 16px;
+            --radius-small: 12px;
+            --spacing-xs: 8px;
+            --spacing-sm: 12px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 25%, #4a69bd 50%, #6a89cc 75%, #82ccdd 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            color: var(--text-primary);
+            padding: var(--spacing-md);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(67, 233, 123, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-xl);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            border-radius: var(--radius-large);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            font-weight: 800;
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 100px;
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-medium);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: var(--transition-smooth);
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            border-radius: var(--radius-large);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-icon {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-medium);
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: var(--transition-smooth);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        /* Liquid Glass Cards Grid */
+        .wifi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        /* Liquid Glass Card */
+        .wifi-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            -webkit-backdrop-filter: blur(var(--blur-amount));
+            border-radius: var(--radius-large);
+            padding: var(--spacing-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .wifi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .wifi-card:hover::before,
+        .wifi-card:active::before {
+            opacity: 1;
+        }
+
+        .wifi-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Network Name */
+        .network-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-medium);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            word-break: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        /* Password Section */
+        .password-section {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .password-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+        }
+
+        .password-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            padding: var(--spacing-md);
+            background: rgba(67, 233, 123, 0.1);
+            border-radius: var(--radius-medium);
+            border: 1px solid rgba(67, 233, 123, 0.2);
+            text-align: center;
+            word-break: break-all;
+            margin-bottom: var(--spacing-md);
+            transition: var(--transition-smooth);
+        }
+
+        .password-value:hover {
+            background: rgba(67, 233, 123, 0.15);
+            transform: scale(1.02);
+        }
+
+        .open-network {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fee140;
+            padding: var(--spacing-md);
+            background: rgba(250, 112, 154, 0.1);
+            border-radius: var(--radius-medium);
+            border: 1px solid rgba(250, 112, 154, 0.2);
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: auto;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: var(--spacing-md);
+            border: none;
+            border-radius: var(--radius-medium);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .copy-ssid {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+            color: white;
+        }
+
+        .copy-password {
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.8), rgba(56, 249, 215, 0.8));
+            color: white;
+        }
+
+        .copy-open {
+            background: linear-gradient(135deg, rgba(250, 112, 154, 0.8), rgba(254, 225, 64, 0.8));
+            color: white;
+        }
+
+        .action-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* Notification */
+        .copy-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.9), rgba(56, 249, 215, 0.9));
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-medium);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: var(--spacing-xl);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            border-radius: var(--radius-large);
+            border: 1px solid var(--glass-border);
+            margin-top: var(--spacing-xl);
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* No Results */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: var(--spacing-xl);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            border-radius: var(--radius-large);
+            border: 1px solid var(--glass-border);
+        }
+
+        .no-results-icon {
+            font-size: 3rem;
+            color: var(--text-tertiary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .no-results h3 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .no-results p {
+            color: var(--text-secondary);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: opacity 0.5s;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid transparent;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 480px) {
+            body {
+                padding: var(--spacing-sm);
+            }
+
+            .header {
+                padding: var(--spacing-lg);
+            }
+
+            .stats-bar {
+                gap: var(--spacing-sm);
+            }
+
+            .stat-item {
+                min-width: 80px;
+                padding: var(--spacing-sm);
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .wifi-card {
+                padding: var(--spacing-lg);
+                min-height: 200px;
+            }
+
+            .network-name {
+                font-size: 1.4rem;
+                padding: var(--spacing-sm);
+            }
+
+            .password-value {
+                font-size: 1.5rem;
+                padding: var(--spacing-sm);
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                padding: var(--spacing-sm);
+            }
+        }
+
+        /* Touch Device Optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .wifi-card:hover {
+                transform: none;
+            }
+
+            .wifi-card:active {
+                transform: scale(0.98);
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            .action-btn:active {
+                transform: scale(0.95);
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --glass-bg: rgba(0, 0, 0, 0.2);
+                --glass-border: rgba(255, 255, 255, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-wifi"></i> Liquid Glass WiFi</h1>
+            <p>Browse your saved networks with stunning liquid glass design</p>
+            
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalNetworks">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="protectedNetworks">0</div>
+                    <div class="stat-label">Protected</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="openNetworks">0</div>
+                    <div class="stat-label">Open</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="search-input" 
+                       placeholder="Search networks..." autocomplete="off">
+            </div>
+        </div>
+        
+        <div class="wifi-grid" id="wifiGrid">
+            <!-- WiFi cards will be inserted here -->
+        </div>
+        
+        <div class="footer">
+            <p><span id="networkCount">0</span> networks • <span id="generationTime"></span></p>
+            <p>Tap any card to copy • Swipe to scroll</p>
+        </div>
+        
+        <div id="copyNotification" class="copy-notification">
+            <i class="fas fa-check-circle"></i>
+            <span id="copyMessage">Copied to clipboard!</span>
+        </div>
+    </div>
+    
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+        <p>Loading your WiFi networks...</p>
+    </div>
+    
+    <script>
+        // Global state
+        let allNetworks = [];
+        let filteredNetworks = [];
+        
+        // DOM elements
+        const wifiGrid = document.getElementById('wifiGrid');
+        const searchInput = document.getElementById('searchInput');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const notification = document.getElementById('copyNotification');
+        const copyMessage = document.getElementById('copyMessage');
+        const totalNetworksEl = document.getElementById('totalNetworks');
+        const protectedNetworksEl = document.getElementById('protectedNetworks');
+        const openNetworksEl = document.getElementById('openNetworks');
+        const networkCountEl = document.getElementById('networkCount');
+        const generationTimeEl = document.getElementById('generationTime');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            generationTimeEl.textContent = new Date().toLocaleTimeString();
+            
+            // Load networks
+            await loadNetworks();
+            
+            // Setup search
+            setupSearch();
+            
+            // Setup keyboard shortcuts
+            setupKeyboardShortcuts();
+            
+            // Hide loading spinner
+            setTimeout(() => {
+                loadingSpinner.style.opacity = '0';
+                setTimeout(() => {
+                    loadingSpinner.style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+        
+        // Load networks from embedded data
+        async function loadNetworks() {
+            try {
+                if (window.wifiNetworks && Array.isArray(window.wifiNetworks)) {
+                    allNetworks = window.wifiNetworks;
+                    filteredNetworks = [...allNetworks];
+                    
+                    updateStats();
+                    renderNetworks();
+                    
+                    // Add touch feedback to cards
+                    document.querySelectorAll('.wifi-card').forEach(card => {
+                        card.addEventListener('touchstart', () => {
+                            card.style.transform = 'scale(0.98)';
+                        });
+                        
+                        card.addEventListener('touchend', () => {
+                            card.style.transform = '';
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading networks:', error);
+                showError('Failed to load WiFi networks');
+            }
+        }
+        
+        // Render networks to grid
+        function renderNetworks() {
+            if (filteredNetworks.length === 0) {
+                wifiGrid.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">
+                            <i class="fas fa-wifi-slash"></i>
+                        </div>
+                        <h3>No networks found</h3>
+                        <p>Try a different search term</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            wifiGrid.innerHTML = filteredNetworks.map((network, index) => `
+                <div class="wifi-card" onclick="focusCard(${index})">
+                    <div class="network-name">${escapeHtml(network.ssid)}</div>
+                    <div class="password-section">
+                        <span class="password-label">WiFi Password</span>
+                        ${network.password && network.password !== 'null' ? `
+                            <div class="password-value" onclick="copyPassword('${escapeHtml(network.password)}')">
+                                ${escapeHtml(network.password)}
+                            </div>
+                            <div class="action-buttons">
+                                <button class="action-btn copy-ssid" onclick="event.stopPropagation(); copySSID('${escapeHtml(network.ssid)}')">
+                                    <i class="fas fa-copy"></i> Copy SSID
+                                </button>
+                                <button class="action-btn copy-password" onclick="event.stopPropagation(); copyPassword('${escapeHtml(network.password)}')">
+                                    <i class="fas fa-key"></i> Copy Password
+                                </button>
+                            </div>
+                        ` : `
+                            <div class="open-network">
+                                <i class="fas fa-unlock"></i> Open Network
+                            </div>
+                            <div class="action-buttons">
+                                <button class="action-btn copy-ssid" onclick="event.stopPropagation(); copySSID('${escapeHtml(network.ssid)}')">
+                                    <i class="fas fa-copy"></i> Copy SSID
+                                </button>
+                                <button class="action-btn copy-open" onclick="event.stopPropagation(); markAsOpen()">
+                                    <i class="fas fa-info-circle"></i> Open Network
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+            
+            networkCountEl.textContent = filteredNetworks.length;
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const total = allNetworks.length;
+            const protectedCount = allNetworks.filter(n => n.password && n.password !== 'null').length;
+            const openCount = total - protectedCount;
+            
+            totalNetworksEl.textContent = total;
+            protectedNetworksEl.textContent = protectedCount;
+            openNetworksEl.textContent = openCount;
+            networkCountEl.textContent = total;
+        }
+        
+        // Setup search functionality
+        function setupSearch() {
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                
+                searchTimeout = setTimeout(() => {
+                    const term = e.target.value.toLowerCase().trim();
+                    
+                    if (term === '') {
+                        filteredNetworks = [...allNetworks];
+                    } else {
+                        filteredNetworks = allNetworks.filter(network => 
+                            network.ssid.toLowerCase().includes(term) ||
+                            (network.password && network.password.toLowerCase().includes(term))
+                        );
+                    }
+                    
+                    renderNetworks();
+                }, 300);
+            });
+            
+            // Clear search on escape
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    filteredNetworks = [...allNetworks];
+                    renderNetworks();
+                    searchInput.blur();
+                }
+            });
+        }
+        
+        // Setup keyboard shortcuts
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ctrl/Cmd + F to focus search
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
+                
+                // / to focus search
+                if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+        }
+        
+        // Copy functions
+        function copySSID(text) {
+            copyToClipboard(text, 'SSID');
+        }
+        
+        function copyPassword(text) {
+            copyToClipboard(text, 'Password');
+        }
+        
+        function markAsOpen() {
+            showNotification('This is an open network (no password)');
+        }
+        
+        // Copy to clipboard with modern API
+        async function copyToClipboard(text, type) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showNotification(`${type} copied to clipboard!`);
+                
+                // Haptic feedback on supported devices
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    showNotification(`${type} copied to clipboard!`);
+                } catch (err2) {
+                    showNotification('Failed to copy. Please copy manually.');
+                }
+                
+                document.body.removeChild(textArea);
+            }
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            copyMessage.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+        
+        // Show error
+        function showError(message) {
+            copyMessage.textContent = message;
+            notification.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9))';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                notification.style.background = '';
+            }, 3000);
+        }
+        
+        // Focus card with animation
+        function focusCard(index) {
+            const cards = document.querySelectorAll('.wifi-card');
+            
+            cards.forEach((card, i) => {
+                if (i === index) {
+                    card.style.transform = 'scale(0.98)';
+                    card.style.background = 'rgba(255, 255, 255, 0.15)';
+                    
+                    setTimeout(() => {
+                        card.style.transform = '';
+                        card.style.background = '';
+                    }, 200);
+                }
+            });
+        }
+        
+        // Utility function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Handle orientation changes
+        window.addEventListener('orientationchange', () => {
+            // Refresh layout on orientation change
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 100);
+        });
+    </script>
+    
+    <script>
+        // Embedded WiFi networks data
+        window.wifiNetworks = [
+            {ssid: "Abdur Rahman", password: "00998800"}
+            ,
+            {ssid: "Camily", password: "camily123"}
+            ,
+            {ssid: "Melon", password: "12301230"}
+            ,
+            {ssid: "vivo Y17s", password: null}
+            ,
+            {ssid: "♥️༄●⃝Ãkhî Ãfrøz☯", password: "Akhi moni 12"}
+            ,
+            {ssid: "INVISIBLE2.0", password: "a124game"}
+            ,
+            {ssid: "Fuck You", password: "01234567890"}
+            ,
+            {ssid: "Infinix HOT 50 Pro+", password: "12345678"}
+            ,
+            {ssid: "Khokon", password: "25802580"}
+            ,
+            {ssid: "itel S23", password: "000000000000000"}
+            ,
+            {ssid: "Nokia C32", password: "99999999"}
+            ,
+            {ssid: "NEXG N72", password: "12345678"}
+            ,
+            {ssid: "Md.Shahadat Hossain", password: "1711462258"}
+            ,
+            {ssid: "innova30", password: "12345678"}
+            ,
+            {ssid: "Hacker's Wifi", password: "Lyaora722"}
+            ,
+            {ssid: "Maverick", password: "dhruba01838224490"}
+            ,
+            {ssid: "JAHID PHARMACY", password: "57641616J"}
+            ,
+            {ssid: "Upcare agro", password: "UP@AGRO06022020"}
+            ,
+            {ssid: "vivo 1907", password: "12345678"}
+            ,
+            {ssid: "Salim saddar", password: "987654321"}
+            ,
+            {ssid: "GLORYof12", password: "HOLL5231"}
+            ,
+            {ssid: "MJ Max", password: "12341235"}
+            ,
+            {ssid: "Upcare", password: "79419291"}
+            ,
+            {ssid: "realme C11", password: "12345678"}
+            ,
+            {ssid: "V2026", password: "018700370"}
+            ,
+            {ssid: "rupok", password: "alamin77"}
+            ,
+            {ssid: "Halima Pharmacy", password: "9753197531"}
+            ,
+            {ssid: "TP-LINK", password: "77553311spl"}
+            ,
+            {ssid: "Coffi sop", password: "1234567890"}
+            ,
+            {ssid: "Ruhul", password: "RuhulRuhul"}
+            ,
+            {ssid: "OPPO A16", password: "12347890"}
+            ,
+            {ssid: "UDDIPAN GUEST", password: "Udpn#7865"}
+            ,
+            {ssid: "M\/S MITALI COSMETICS", password: "1221344399"}
+            ,
+            {ssid: "itel S25 Ultra", password: "00000000"}
+            ,
+            {ssid: "itel S25 Ultra", password: "00000000"}
+            ,
+            {ssid: "♪≈«Hello♣vikhari ≈?", password: "MB nai shona"}
+            ,
+            {ssid: "Carnival-2.4G", password: null}
+            ,
+            {ssid: "JAY GURU MISTANNA BHANDER", password: "89891000"}
+            ,
+            {ssid: "Ip Camera", password: "405060708090"}
+            ,
+            {ssid: "SAM", password: "Sam@3344"}
+            ,
+            {ssid: "Rakibul Hasan", password: null}
+            ,
+            {ssid: "MAX 60", password: null}
+            ,
+            {ssid: "Redmi 8", password: null}
+            ,
+            {ssid: "NEXG N75", password: "87654321"}
+            ,
+            {ssid: "INVISIBLE3.0", password: "a124game"}
+            ,
+            {ssid: "মাহিবা", password: "123456789"}
+            ,
+            {ssid: "Mim cosmetics", password: "Rezaul2357"}
+            ,
+            {ssid: "ManagementAP", password: "mgmtadmin"}
+            ,
+            {ssid: "AM😎", password: "00000000"}
+            ,
+            {ssid: "Free by Abdullah", password: null}
+            ,
+            {ssid: "ESP32_NAT_Router", password: null}
+            ,
+            {ssid: "AM", password: null}
+            ,
+            {ssid: "AM😍", password: null}
+            ,
+            {ssid: "NAT", password: null}
+            ,
+            {ssid: "AM😉", password: null}
+            ,
+            {ssid: "লিটন কফি", password: "0987654321"}
+            ,
+            {ssid: "vivo 1811", password: "121213134"}
+            ,
+            {ssid: "WiFi_Pentest", password: "password123"}
+            ,
+            {ssid: "vivo 1811", password: null}
+            ,
+            {ssid: "Shahin", password: "56908990"}
+            ,
+            {ssid: "PROLOY", password: "PROLOY99355"}
+            ,
+            {ssid: "itel Super 26 Ultra", password: "0000000000"}
+            ,
+            {ssid: "Rakib", password: null}
+            ,
+            {ssid: "Ballal", password: "01881923917"}
+            ,
+            {ssid: "Ujjal", password: "ADRIYAN1122"}
+            ,
+            {ssid: "Robiul", password: "00000000"}
+            ,
+            {ssid: "mahiba", password: "123456789"}
+            ,
+            {ssid: "Tenda_1538D8", password: "25802580"}
+            ,
+            {ssid: "V2043", password: "123456789"}
+        ];
+    </script>
+</body>
+</html>

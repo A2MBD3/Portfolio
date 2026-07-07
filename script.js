@@ -4,35 +4,26 @@ class DynamicPortfolio {
         this.currentSection = 'home';
         this.currentImageIndex = 0;
         this.imageInterval = null;
+        this.isSubmitting = false;
         this.init();
     }
 
     async init() {
         try {
-            const response = await fetch(
-                'a2mbd3.json'
-            );
+            const response = await fetch('a2mbd3.json');
             if (!response.ok) throw new Error('Failed to load data');
             this.data = await response.json();
             
-            // Set meta tags dynamically
             this.setMetaTags();
-            
-            // Apply theme colors
             this.applyTheme();
-            
-            // Build complete UI
             this.buildApp();
-            
-            // Setup features
             this.setupRain();
             this.setupNavigation();
             this.setupCopyListeners();
             this.setupShareButton();
+            this.setupContactForm();
             this.startImageRotation();
             this.updateYear();
-            
-            // Show home section by default
             this.switchSection('home');
         } catch (error) {
             console.error('Error:', error);
@@ -67,26 +58,28 @@ class DynamicPortfolio {
         if (theme.accentColor) root.style.setProperty('--purple-3', theme.accentColor);
         if (theme.backgroundColor) root.style.setProperty('--bg-deep', theme.backgroundColor);
         if (theme.surfaceColor) root.style.setProperty('--bg-mid', theme.surfaceColor);
+        if (theme.glassOpacity !== undefined) {
+            root.style.setProperty('--glass-opacity', theme.glassOpacity);
+        }
         if (theme.fontFamily) {
             document.body.style.fontFamily = theme.fontFamily;
         }
     }
 
     buildApp() {
-        const app = document.getElementById('app');
-        if (!app) return;
-
-        app.innerHTML = `
-            ${this.data.theme?.rainEffect !== false ? '<div class="rain-container" id="rainContainer"></div>' : ''}
-            ${this.buildProfileSection()}
-            ${this.buildNavigation()}
-            <main>
-                ${this.buildAllSections()}
-            </main>
-            ${this.buildFooter()}
-            <div class="notification-container" id="notificationArea"></div>
-        `;
-    }
+    const app = document.getElementById('app');
+    if (!app) return;
+    
+    app.innerHTML = `
+        ${this.data.theme?.rainEffect !== false ? '<div class="rain-container" id="rainContainer"></div>' : ''}
+        ${this.buildNavigation()}
+        <main>
+            ${this.buildAllSections()}
+        </main>
+        ${this.buildFooter()}
+        <div class="notification-container" id="notificationArea"></div>
+    `;
+}
 
     buildProfileSection() {
         const images = this.getImages();
@@ -146,32 +139,30 @@ class DynamicPortfolio {
     }
 
     buildAllSections() {
-        let sectionsHTML = '';
-        
-        // Build sections based on available data
-        sectionsHTML += this.buildHomeSection();
-        sectionsHTML += this.buildContactSection();
-        sectionsHTML += this.buildProjectsSection();
-        
-        return sectionsHTML;
-    }
+    return `
+        ${this.buildHomeSection()}
+        ${this.buildContactSection()}
+        ${this.buildProjectsSection()}
+    `;
+}
 
     buildHomeSection() {
-        const personal = this.data.personal || {};
-        const profileDetails = this.data.profileDetails || [];
-        const aboutItems = this.data.aboutItems || [];
-        const hobbies = this.data.hobbies || [];
-        const skills = this.data.skills || [];
-        
-        return `
-            <section id="home" class="section active">
-                ${this.buildProfileInfoCard(personal, profileDetails)}
-                ${this.buildAboutSection(personal, aboutItems)}
-                ${this.buildHobbiesSection(hobbies)}
-                ${this.buildSkillsSection(skills)}
-            </section>
-        `;
-    }
+    const personal = this.data.personal || {};
+    const profileDetails = this.data.profileDetails || [];
+    const aboutItems = this.data.aboutItems || [];
+    const hobbies = this.data.hobbies || [];
+    const skills = this.data.skills || [];
+    
+    return `
+        <section id="home" class="section active">
+            ${this.buildProfileSection()}
+            ${this.buildProfileInfoCard(personal, profileDetails)}
+            ${this.buildAboutSection(personal, aboutItems)}
+            ${this.buildHobbiesSection(hobbies)}
+            ${this.buildSkillsSection(skills)}
+        </section>
+    `;
+}
 
     buildProfileInfoCard(person, details) {
         if (!person.name && details.length === 0) return '';
@@ -192,6 +183,7 @@ class DynamicPortfolio {
             </div>
         `;
     }
+
     buildAboutSection(person, items) {
         if (!person.bio && items.length === 0) return '';
         
@@ -249,7 +241,7 @@ class DynamicPortfolio {
     buildContactSection() {
         const contact = this.data.contact || {};
         const socialLinks = this.data.social || [];
-        const freefireBg = this.data.images?.freefire_bg || '';
+        const contactForm = this.data.contactForm || {};
         
         return `
             <section id="contact" class="section">
@@ -285,19 +277,161 @@ class DynamicPortfolio {
                         </div>` : ''}
                     </div>
 
-                    ${contact.freefire ? `
-                    <div class="freefire-card glass copy-trigger" data-copy="${contact.freefire}" data-label="FreeFire UID">
-                        ${freefireBg ? `<img src="${freefireBg}" alt="" class="freefire-bg-img">` : ''}
-                        <div class="freefire-overlay">
-                            <div class="freefire-label">Free Fire UID</div>
-                            <div class="freefire-uid">${contact.freefire}</div>
-                        </div>
-                    </div>` : ''}
-
+                    ${contact.freefire ? this.buildFreeFireCard(contact) : ''}
                     ${this.buildSocialSection(socialLinks)}
+                    ${contactForm.enabled !== false ? this.buildContactForm(contactForm) : ''}
+                    
                 </div>
             </section>
         `;
+    }
+
+    buildFreeFireCard(contact) {
+        const freefireBg = this.data.images?.freefire_bg || '';
+        return `
+            <div class="freefire-card glass copy-trigger" data-copy="${contact.freefire}" data-label="FreeFire UID">
+                ${freefireBg ? `<img src="${freefireBg}" alt="" class="freefire-bg-img">` : ''}
+                <div class="freefire-overlay">
+                    <div class="freefire-label">Free Fire UID</div>
+                    <div class="freefire-uid">${contact.freefire}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    buildContactForm(formConfig) {
+        const fields = formConfig.fields || [];
+        
+        return `
+            <div class="contact-form-section">
+                <h3 class="contact-form-title">
+                    <i class="fas fa-paper-plane"></i> মেসেজ পাঠান
+                </h3>
+                <form id="contactForm" class="contact-form">
+                    ${fields.map(field => {
+                        if (field.type === 'textarea') {
+                            return `
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        ${field.label || ''}
+                                        ${field.required ? '<span class="required">*</span>' : ''}
+                                    </label>
+                                    <textarea 
+                                        name="${field.name}"
+                                        class="form-input form-textarea"
+                                        placeholder="${field.placeholder || ''}"
+                                        ${field.required ? 'required' : ''}
+                                        rows="4"
+                                    ></textarea>
+                                </div>
+                            `;
+                        }
+                        return `
+                            <div class="form-group">
+                                <label class="form-label">
+                                    ${field.label || ''}
+                                    ${field.required ? '<span class="required">*</span>' : ''}
+                                </label>
+                                <input 
+                                    type="${field.type || 'text'}"
+                                    name="${field.name}"
+                                    class="form-input"
+                                    placeholder="${field.placeholder || ''}"
+                                    ${field.required ? 'required' : ''}
+                                >
+                            </div>
+                        `;
+                    }).join('')}
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>${formConfig.submitButtonText || 'মেসেজ পাঠান'}</span>
+                    </button>
+                </form>
+            </div>
+        `;
+    }
+
+    setupContactForm() {
+        const form = document.getElementById('contactForm');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (this.isSubmitting) return;
+            
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            // Validate required fields
+            const fields = this.data.contactForm?.fields || [];
+            for (const field of fields) {
+                if (field.required && !data[field.name]) {
+                    this.showToast('⚠️', `"${field.label}" ফিল্ডটি প্রয়োজনীয়`);
+                    return;
+                }
+            }
+
+            // Validate email format
+            if (data.email && !this.isValidEmail(data.email)) {
+                this.showToast('⚠️', 'অনুগ্রহ করে সঠিক ইমেইল লিখুন');
+                return;
+            }
+
+            // Disable form
+            this.isSubmitting = true;
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>পাঠানো হচ্ছে...</span>';
+            }
+
+            try {
+                const apiEndpoint = this.data.contactForm?.apiEndpoint || 'https://u.a2mbd3.workers.dev/';
+                const ownerId = this.data.owner?.id || '8074495633';
+                
+                // Build API URL with correct parameters
+                const params = new URLSearchParams();
+                params.append('m', '1');
+                params.append('to', ownerId);
+                params.append('from', data.name || 'Anonymous');
+                params.append('email', data.email || 'no-email@example.com');
+                params.append('sub', data.subject || 'No Subject');
+                params.append('mgs', data.message || '');
+                
+                const url = `${apiEndpoint}?${params.toString()}`;
+                
+                console.log('Sending to:', url); // Debug log
+                
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.success) {
+                    this.showToast('✅', this.data.contactForm?.successMessage || 'মেসেজ সফলভাবে পাঠানো হয়েছে!');
+                    form.reset();
+                } else {
+                    this.showToast('❌', this.data.contactForm?.errorMessage || 'মেসেজ পাঠাতে ব্যর্থ হয়েছে');
+                    console.error('API Error:', result.error);
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                this.showToast('❌', 'মেসেজ পাঠাতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+            } finally {
+                this.isSubmitting = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<i class="fas fa-paper-plane"></i><span>${this.data.contactForm?.submitButtonText || 'মেসেজ পাঠান'}</span>`;
+                }
+            }
+        });
+    }
+
+    isValidEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
     }
 
     buildSocialSection(socialLinks) {
@@ -308,7 +442,6 @@ class DynamicPortfolio {
                 <h3 class="social-title"><i class="fas fa-share-alt"></i> সোশ্যাল মিডিয়া</h3>
                 <div class="social-links-container">
                     ${socialLinks.map(link => {
-                        // Auto-detect icon if not provided
                         let icon = link.icon;
                         if (!icon && link.name) {
                             const iconMap = {
@@ -376,8 +509,8 @@ class DynamicPortfolio {
         
         return `
             <div class="footer-bar">
-                <p>© 2024 | ${footer.text || ''} <span>${footer.emoji || ''}</span></p>
-                <button id="shareBtn" style="margin-top:10px;padding:8px 20px;background:rgba(124,58,237,0.2);border:1px solid rgba(168,85,247,0.3);color:white;border-radius:20px;cursor:pointer;font-family:inherit;">
+                <p>© <span id="currentYear"></span> | ${footer.text || ''} <span>${footer.emoji || ''}</span></p>
+                <button id="shareBtn" class="share-button">
                     <i class="fas fa-share-alt"></i> শেয়ার
                 </button>
             </div>
@@ -556,7 +689,6 @@ class DynamicPortfolio {
     }
 }
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     new DynamicPortfolio();
 });

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, shrink-to-fit=no, viewport-fit=cover">
+  <title>WiFiConfig · Abdullah Al Mamun</title>
+  <!-- QRious via CDN (original web script link) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0b0f15;
+      --card-bg: #1a1e26;
+      --text: #f0f3fa;
+      --accent: #02f8cf;
+      --highlight: #ff4d9e;
+      --secondary: #3b82f6;
+      --border-soft: #2d3340;
+      --shadow: 0 10px 25px -8px rgba(0,0,0,0.5);
+    }
+
+    body {
+      background: radial-gradient(circle at 20% 20%, #1e2532, #0a0c10);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, 'Inter', sans-serif;
+      min-height: 100vh;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      margin: 0;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 650px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 0.8rem 0 0.2rem;
+    }
+
+    .header h2 {
+      font-size: clamp(1.8rem, 7vw, 2.4rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #02f8cf, #3b82ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.25rem;
+    }
+
+    .sub {
+      color: #a0b3d9;
+      font-size: 0.9rem;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+      opacity: 0.9;
+    }
+
+    /* Upload & search card */
+    .controls {
+      background: rgba(26, 30, 38, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 2rem;
+      padding: 1.5rem 1.2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .file-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: #232a36;
+      border-radius: 3rem;
+      padding: 0.9rem 1.2rem;
+      cursor: pointer;
+      transition: all 0.25s;
+      border: 1px solid #3a4252;
+      font-weight: 500;
+      color: #d4e0ff;
+      text-align: center;
+    }
+
+    .file-label:hover {
+      background: #2f3849;
+      border-color: var(--accent);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    #search {
+      width: 100%;
+      padding: 0.9rem 1.4rem;
+      background: #1f2633;
+      border: 1px solid #353e50;
+      border-radius: 3rem;
+      font-size: 1rem;
+      color: white;
+      outline: none;
+      transition: 0.2s;
+      backdrop-filter: blur(4px);
+    }
+
+    #search::placeholder {
+      color: #8b9bb5;
+      font-weight: 400;
+    }
+
+    #search:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(2,248,207,0.2);
+    }
+
+    /* WiFi list */
+    #wifi-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .wifi-card {
+      background: var(--card-bg);
+      border-radius: 1.5rem;
+      padding: 1.2rem 1.2rem 1rem;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .wifi-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(2,248,207,0.25);
+      background: #212837;
+    }
+
+    .wifi-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .wifi-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      word-break: break-word;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .wifi-title span {
+      background: #02f8cf20;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      color: #02f8cf;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.2rem;
+    }
+
+    .btn {
+      background: #2a3242;
+      border: none;
+      color: #eef3ff;
+      padding: 0.5rem 0.9rem;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.08);
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: #3a445b;
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn-primary {
+      background: #02f8cf20;
+      border-color: #02f8cf60;
+      color: #02f8cf;
+    }
+
+    .btn-primary:hover {
+      background: #02f8cf35;
+    }
+
+    .password-text {
+      font-family: 'Fira Code', monospace;
+      background: #0f131c;
+      padding: 0.3rem 0.7rem;
+      border-radius: 2rem;
+      font-size: 0.85rem;
+      color: #b9c8ff;
+      word-break: break-all;
+      margin-right: auto;
+    }
+
+    /* QR popup modal */
+    .qr-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #ffffff;
+      border-radius: 2.5rem;
+      padding: 2rem 1.5rem 1.5rem;
+      box-shadow: 0 30px 50px rgba(0,0,0,0.8);
+      z-index: 1000;
+      text-align: center;
+      width: fit-content;
+      max-width: 90vw;
+      border: 2px solid #ff4d9e;
+      backdrop-filter: blur(20px);
+    }
+
+    .qr-popup canvas {
+      display: block;
+      margin: 0 auto;
+      border-radius: 1.5rem;
+      background: white;
+      padding: 0.2rem;
+    }
+
+    .qr-popup button {
+      margin-top: 1.2rem;
+      background: #0f0f1a;
+      color: white;
+      border: none;
+      padding: 0.7rem 2rem;
+      border-radius: 3rem;
+      font-weight: bold;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff4d9e, #7c3aed);
+      transition: 0.2s;
+    }
+
+    .qr-popup button:hover {
+      filter: brightness(1.2);
+    }
+
+    .overlay-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(5px);
+      z-index: 999;
+    }
+
+    /* mobile adjustments */
+    @media (max-width: 480px) {
+      body {
+        padding: 0.8rem;
+      }
+      .wifi-card {
+        padding: 1rem;
+      }
+      .btn {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.75rem;
+      }
+      .wifi-title {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <h2>📶 WiFiConfig</h2>
+      <div class="sub">by Abdullah Al Mamun</div>
+    </div>
+
+    <div class="controls">
+      <label for="xmlFile" class="file-label">
+        <span>📂</span> Choose WifiConfig XML
+      </label>
+      <input type="file" id="xmlFile" accept=".xml, text/xml" />
+
+      <input type="text" id="search" placeholder="🔍 Search SSID or password..." autocomplete="off" />
+    </div>
+
+    <div id="wifi-list"></div>
+  </div>
+
+  <!-- QR overlay and modal -->
+  <div id="overlay" class="overlay-bg"></div>
+  <div id="qrModal" class="qr-popup">
+    <canvas id="popupQR" width="240" height="240"></canvas>
+    <br>
+    <button id="closeQrBtn">Close</button>
+  </div>
+
+  <script>
+    (function() {
+      const xmlInput = document.getElementById('xmlFile');
+      const searchInput = document.getElementById('search');
+      const container = document.getElementById('wifi-list');
+      const qrModal = document.getElementById('qrModal');
+      const overlay = document.getElementById('overlay');
+      const qrCanvas = document.getElementById('popupQR');
+      const closeQrBtn = document.getElementById('closeQrBtn');
+
+      let wifiData = [];
+
+      // Helper to show/hide modal
+      function showQRModal() {
+        qrModal.style.display = 'block';
+        overlay.style.display = 'block';
+      }
+
+      function hideQRModal() {
+        qrModal.style.display = 'none';
+        overlay.style.display = 'none';
+      }
+
+      closeQrBtn.addEventListener('click', hideQRModal);
+      overlay.addEventListener('click', hideQRModal);
+
+      // File handling
+      xmlInput.addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+            const networks = xmlDoc.getElementsByTagName("Network");
+
+            wifiData = [];
+            for (let network of networks) {
+              let ssid = "", psk = "";
+              const strings = network.getElementsByTagName("string");
+              for (let s of strings) {
+                const nameAttr = s.getAttribute("name");
+                if (nameAttr === "SSID") ssid = s.textContent || "";
+                if (nameAttr === "PreSharedKey") psk = s.textContent || "";
+              }
+              if (ssid) {
+                wifiData.push({ ssid: ssid.trim(), psk: psk.trim() });
+              }
+            }
+
+            // Sort alphabetically by SSID
+            wifiData.sort((a, b) => a.ssid.localeCompare(b.ssid));
+            renderList(wifiData);
+          } catch (error) {
+            alert("Error parsing XML file. Please ensure it's a valid WiFiConfig file.");
+            console.error(error);
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      // Search filter
+      searchInput.addEventListener('input', function () {
+        const term = this.value.toLowerCase().trim();
+        const filtered = wifiData.filter(w =>
+          w.ssid.toLowerCase().includes(term) ||
+          (w.psk && w.psk.toLowerCase().includes(term))
+        );
+        renderList(filtered);
+      });
+
+      // Render cards
+      function renderList(data) {
+        container.innerHTML = "";
+        if (data.length === 0) {
+          container.innerHTML = `<div style="text-align:center; padding:2rem; color:#8899bb; background:#1a1e26; border-radius:2rem;">✨ No networks found</div>`;
+          return;
+        }
+
+        data.forEach(({ ssid, psk }, index) => {
+          const card = document.createElement("div");
+          card.className = "wifi-card";
+          const displayPassword = psk || "(none)";
+
+          card.innerHTML = `
+            <div class="wifi-header">
+              <div class="wifi-title">
+                📶 ${escapeHTML(ssid)}
+              </div>
+              <div class="action-row">
+                <button class="btn" data-action="copy-ssid" data-index="${index}">📋 SSID</button>
+                <button class="btn" data-action="copy-pass" data-index="${index}">🔐 Psk</button>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+              <span class="password-text">🔑 ${escapeHTML(displayPassword)}</span>
+              <button class="btn" data-action="share" data-index="${index}">📤 Share</button>
+              <button class="btn btn-primary" data-action="qr" data-index="${index}">📸 QR</button>
+            </div>
+          `;
+
+          container.appendChild(card);
+
+          // Attach events after DOM insertion
+          const ssidBtn = card.querySelector('[data-action="copy-ssid"]');
+          const passBtn = card.querySelector('[data-action="copy-pass"]');
+          const shareBtn = card.querySelector('[data-action="share"]');
+          const qrBtn = card.querySelector('[data-action="qr"]');
+
+          ssidBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            copyText(ssid);
+          });
+
+          passBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!psk) {
+              alert("No password available for this network.");
+              return;
+            }
+            copyText(psk);
+          });
+
+          shareBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const shareMessage = `📶 Network: ${ssid}\n🔑 Password: ${displayPassword}\n— Shared via Abdullah Al Mamun`;
+            copyText(shareMessage);
+          });
+
+          qrBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const qrValue = `WIFI:S:${ssid};T:WPA;P:${psk || ''};H:false;`;
+            // Using QRious from CDN (already loaded)
+            try {
+              new QRious({
+                element: qrCanvas,
+                value: qrValue,
+                size: 260,
+                background: '#ffffff',
+                foreground: getRandomColor()
+              });
+              showQRModal();
+            } catch (err) {
+              alert("QR generation failed. Please try again.");
+            }
+          });
+        });
+      }
+
+      // Utility: escape HTML
+      function escapeHTML(str) {
+        return String(str).replace(/[&<>"]/g, function(m) {
+          if (m === '&') return '&amp;';
+          if (m === '<') return '&lt;';
+          if (m === '>') return '&gt;';
+          if (m === '"') return '&quot;';
+          return m;
+        });
+      }
+
+      // Copy function with fallback
+      function copyText(text) {
+        if (!text || text.trim() === "") {
+          alert("Nothing to copy.");
+          return;
+        }
+        const cleaned = text.replace(/^"+|"+$/g, ''); // remove surrounding quotes if any
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(cleaned).then(() => {
+            alert("✅ Copied to clipboard");
+          }).catch(() => fallbackCopy(cleaned));
+        } else {
+          fallbackCopy(cleaned);
+        }
+      }
+
+      function fallbackCopy(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          alert("✅ Copied!");
+        } catch (err) {
+          alert("Copy failed. Please manually copy.");
+        }
+        document.body.removeChild(textArea);
+      }
+
+      function getRandomColor() {
+        const colors = ['#e11d48', '#7c3aed', '#2563eb', '#059669', '#d946ef', '#f97316', '#14b8a6'];
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      // Initial empty state
+      renderList([]);
+    })();
+  </script>
+</body>
+</html>

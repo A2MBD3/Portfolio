@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>স্মার্ট লাইফ রুটিন</title>
+    <style>
+        :root {
+            --main-bg: linear-gradient(180deg, #000000 0%, #0a0a0c 100%);
+            --card-color: #161618;
+            --accent-glow: #00f2ff;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--main-bg);
+            background-attachment: fixed;
+            color: var(--text-white);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, #00f2ff, #006aff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        #clock {
+            font-size: 1rem;
+            color: var(--text-gray);
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+
+        .routine-list {
+            width: 100%;
+            max-width: 420px;
+            will-change: contents;
+        }
+
+        .task-card {
+            background: var(--card-color);
+            margin-bottom: 15px;
+            padding: 18px 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            border: 1px solid #222;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- হাইলাইট ও গ্লো ইফেক্ট --- */
+        .active-now {
+            background: linear-gradient(110deg, #1a1a1c 0%, #202024 100%);
+            border-color: var(--accent-glow) !important;
+            transform: scale(1.04) translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.15);
+            z-index: 5;
+        }
+
+        /* বাম পাশের নিওন ইন্ডিকেটর */
+        .active-now::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 15%;
+            height: 70%;
+            width: 4px;
+            background: var(--accent-glow);
+            border-radius: 0 5px 5px 0;
+            box-shadow: 0 0 15px var(--accent-glow);
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        /* LIVE ব্যাজ */
+        .active-now::after {
+            content: "LIVE";
+            position: absolute;
+            right: 50px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            color: var(--accent-glow);
+            border: 1px solid var(--accent-glow);
+            padding: 2px 8px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.6; box-shadow: 0 0 5px var(--accent-glow); }
+            50% { opacity: 1; box-shadow: 0 0 20px var(--accent-glow); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .time {
+            font-size: 0.85rem;
+            color: var(--accent-glow);
+            font-weight: 700;
+            min-width: 95px;
+        }
+
+        .task-info {
+            flex-grow: 1;
+        }
+
+        .task-name {
+            display: block;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--text-gray);
+            transition: color 0.3s;
+        }
+
+        .active-now .task-name {
+            color: var(--text-white);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+        }
+
+        .icon {
+            font-size: 1.3rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 400px) {
+            .time { min-width: 85px; font-size: 0.8rem; }
+            .task-name { font-size: 0.95rem; }
+            .active-now::after { right: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>আমার দিনলিপি</h1>
+    <div id="clock">00:00:00 AM</div>
+
+    <div class="routine-list" id="routineList">
+        </div>
+
+    <script>
+        const tasks = [
+            { t: "05:00", n: "ঘুম থেকে ওঠা", i: "🌅" },
+            { t: "05:30", n: "ফজরের নামাজ", i: "🕌" },
+            { t: "06:00", n: "ব্যায়াম ও হাঁটা", i: "🏃" },
+            { t: "06:45", n: "বই পড়া", i: "📖" },
+            { t: "08:00", n: "সকালের নাস্তা", i: "🍳" },
+            { t: "09:00", n: "কাজ / পড়াশোনা", i: "💻" },
+            { t: "13:15", n: "জোহর ও গোসল", i: "🕌" },
+            { t: "14:00", n: "দুপুরের খাবার", i: "🍛" },
+            { t: "16:30", n: "আসর নামাজ", i: "🕌" },
+            { t: "17:30", n: "বিকেলের নাস্তা", i: "☕" },
+            { t: "18:15", n: "মাগরিব নামাজ", i: "🕌" },
+            { t: "20:30", n: "এশার নামাজ", i: "🕌" },
+            { t: "21:00", n: "রাতের খাবার", i: "🍽️" },
+            { t: "22:30", n: "ঘুমিয়ে পড়া", i: "💤" }
+        ];
+
+        function to12Hr(time) {
+            let [h, m] = time.split(':').map(Number);
+            let suffix = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${h}:${m < 10 ? '0'+m : m} ${suffix}`;
+        }
+
+        function update() {
+            const now = new Date();
+            const curMin = now.getHours() * 60 + now.getMinutes();
+            
+            // ঘড়ি আপডেট
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: true });
+
+            let html = '';
+            tasks.forEach((task, idx) => {
+                const [h, m] = task.t.split(':').map(Number);
+                const start = h * 60 + m;
+                
+                let nextStart = 1440; 
+                if(idx < tasks.length - 1) {
+                    const [nh, nm] = tasks[idx+1].t.split(':').map(Number);
+                    nextStart = nh * 60 + nm;
+                }
+                
+                let active = false;
+                if (start > nextStart) { // মধ্যরাত হ্যান্ডেল করা
+                    active = curMin >= start || curMin < nextStart;
+                } else {
+                    active = curMin >= start && curMin < nextStart;
+                }
+
+                html += `
+                    <div class="task-card ${active ? 'active-now' : ''}">
+                        <div class="time">${to12Hr(task.t)}</div>
+                        <div class="task-info">
+                            <span class="task-name">${task.n}</span>
+                        </div>
+                        <div class="icon">${task.i}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('routineList').innerHTML = html;
+        }
+
+        setInterval(update, 1000); 
+        update();
+    </script>
+</body>
+</html>

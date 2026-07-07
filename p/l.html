@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love ভাষা অনুবাদক</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kalpurush&family=Hind+Siliguri:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: linear-gradient(135deg, #ffebee, #fce4ec);
+            color: #880e4f;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            height: 95vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.15);
+            overflow: hidden;
+            border: 2px solid #ffcdd2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .text-areas {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        @media (max-width: 768px) {
+            .text-areas {
+                flex-direction: column;
+            }
+        }
+
+        .text-area-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .text-area-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #d81b60;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-family: 'Kalpurush', sans-serif;
+            background: linear-gradient(135deg, #ffebee, #fce4ec);
+            padding: 12px 15px;
+            border-radius: 10px;
+            border-left: 4px solid #ff4081;
+        }
+
+        .text-area-label .material-icons {
+            font-size: 22px;
+            margin-right: 10px;
+            color: #f50057;
+        }
+
+        textarea {
+            width: 100%;
+            flex: 1;
+            min-height: 150px;
+            padding: 18px;
+            border: 2px solid #f8bbd9;
+            border-radius: 15px;
+            font-size: 16px;
+            resize: none;
+            background: #fff9fc;
+            transition: all 0.3s ease;
+            font-family: 'Hind Siliguri', sans-serif;
+            color: #4a148c;
+            overflow-y: auto;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ff4081;
+            box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.2);
+            background: white;
+        }
+
+        #output-text {
+            background: #fce4ec;
+            color: #6a1b9a;
+        }
+
+        .mode-selector {
+            display: flex;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid #f8bbd9;
+            background: #fff9fc;
+            box-shadow: 0 4px 10px rgba(255, 20, 147, 0.1);
+        }
+
+        .mode-option {
+            flex: 1;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #880e4f;
+        }
+
+        .mode-option .material-icons {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .mode-option.active {
+            background: linear-gradient(135deg, #ff4081, #f50057);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.3);
+        }
+
+        .mode-option:not(.active):hover {
+            background: rgba(255, 64, 129, 0.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            font-family: 'Kalpurush', sans-serif;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn .material-icons {
+            font-size: 22px;
+            margin-right: 10px;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #66bb6a, #4caf50);
+        }
+
+        .copy-btn:hover {
+            background: linear-gradient(135deg, #4caf50, #43a047);
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ff7043, #f4511e);
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(135deg, #f4511e, #e64a19);
+        }
+
+        .heart {
+            color: #ff4081;
+            animation: heartbeat 1.5s infinite;
+            display: inline-block;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            color: white;
+            border-radius: 12px;
+            transform: translateX(150%);
+            transition: transform 0.4s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            font-weight: 500;
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification .material-icons {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #f44336, #c62828);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #ff9800, #ef6c00);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                height: 100vh;
+                border-radius: 0;
+            }
+            
+            .main-content {
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .text-area-label {
+                font-size: 16px;
+                padding: 10px;
+            }
+            
+            textarea {
+                padding: 15px;
+                font-size: 15px;
+            }
+            
+            .action-btn {
+                padding: 14px 16px;
+                font-size: 15px;
+            }
+            
+            .notification {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+            
+            .mode-option {
+                padding: 12px 5px;
+                font-size: 14px;
+            }
+            
+            .mode-option .material-icons {
+                font-size: 18px;
+                margin-right: 5px;
+            }
+            
+            .action-btn .material-icons {
+                font-size: 20px;
+                margin-right: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="text-areas">
+                <div class="text-area-container">
+                    <div class="text-area-label">
+                        <span class="material-icons">keyboard</span>
+                        তোমার টেক্সট লেখো
+                    </div>
+                    <textarea id="input-text" placeholder="তোমার বার্তা এখানে লেখো বা পেস্ট করো ..."></textarea>
+                </div>
+                
+                <div class="text-area-container">
+                    <div class="text-area-label">
+                        <span class="material-icons">code</span>
+                        অনুবাদ ফলাফল
+                    </div>
+                    <textarea id="output-text" readonly placeholder="অনুবাদ করা ভাষা এখানে দেখানো হবে...
+                 
+                    🌟ব্যবহারের নিয়ম🌟 
+     ✨ পাওয়া বার্তাটি উপরের বক্সে পেস্ট করো এবং সাধারণ ভাষা সিলেক্ট করো।
+     
+     ✨ যে কোন সাধারণ ভাষাকে Love ভাষায় পরিণত করতে উপরে লেখ এবং নিচে Love ভাষা সিলেক্ট করো…
+     "></textarea>
+                </div>
+            </div>
+            
+            <div class="mode-selector">
+                <button class="mode-option" data-mode="encode">
+                    <span class="material-icons">lock</span>
+                    Love ভাষা
+                </button>
+                <button class="mode-option active" data-mode="decode">
+                    <span class="material-icons">lock_open</span>
+                    সাধারণ ভাষা
+                </button>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn copy-btn" id="copy-btn">
+                    <span class="material-icons">content_copy</span>
+                    কপি
+                </button>
+                <button class="action-btn clear-btn" id="clear-btn">
+                    <span class="material-icons">delete</span>
+                    ক্লিয়ার
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <span class="material-icons">check_circle</span>
+        <span id="notification-text">কপি করা হয়েছে!</span>
+    </div>
+
+    <script>
+        // DOM elements
+        const modeOptions = document.querySelectorAll('.mode-option');
+        const inputText = document.getElementById('input-text');
+        const outputText = document.getElementById('output-text');
+        const copyBtn = document.getElementById('copy-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+
+        // Selected mode - ডিফল্ট ডিক্রিপ্ট
+        let selectedMode = 'decode';
+
+        // Mode selection
+        modeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                modeOptions.forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                selectedMode = option.getAttribute('data-mode');
+                processText();
+            });
+        });
+
+        // Base64 Encode function (UTF-8 safe)
+        function encodeToBase64(text) {
+            try {
+                return btoa(unescape(encodeURIComponent(text)));
+            } catch (e) {
+                return btoa(text);
+            }
+        }
+
+        // Base64 Decode function (UTF-8 safe)
+        function decodeFromBase64(base64) {
+            try {
+                return decodeURIComponent(escape(atob(base64)));
+            } catch (e) {
+                try {
+                    return atob(base64);
+                } catch (err) {
+                    return null; // Return null for error
+                }
+            }
+        }
+
+        // Show notification function
+        function showNotification(message, type = 'success') {
+            notificationText.textContent = message;
+            notification.className = 'notification';
+            notification.classList.add(type);
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Process text based on selected mode
+        function processText() {
+            const text = inputText.value.trim();
+            
+            if (!text) {
+                outputText.value = '';
+                return;
+            }
+
+            try {
+                let result;
+                if (selectedMode === 'encode') {
+                    result = encodeToBase64(text);
+                } else {
+                    const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+                    if (!base64Regex.test(text)) {
+                        result = null;
+                        showNotification('ত্রুটি: এটি Love ভাষা নয়!', 'error');
+                    } else {
+                        result = decodeFromBase64(text);
+                        if (result === null) {
+                            showNotification('ত্রুটি: এটি Love ভাষা নয়!', 'error');
+                        }
+                    }
+                }
+                
+                if (result !== null) {
+                    outputText.value = result || '';
+                } else {
+                    outputText.value = '';
+                }
+                
+            } catch (error) {
+                showNotification('ত্রুটি: ' + error.message, 'error');
+                outputText.value = '';
+            }
+        }
+
+        // Copy function - কোনো alert নেই, শুধু notification
+        copyBtn.addEventListener('click', () => {
+            if (outputText.value && outputText.value !== '') {
+                outputText.select();
+                outputText.setSelectionRange(0, 99999);
+                
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        showNotification('কপি করা হয়েছে!', 'success');
+                    } else {
+                        navigator.clipboard.writeText(outputText.value)
+                            .then(() => showNotification('কপি করা হয়েছে!', 'success'))
+                            .catch(() => showNotification('কপি করতে ব্যর্থ হয়েছে!', 'error'));
+                    }
+                } catch (err) {
+                    navigator.clipboard.writeText(outputText.value)
+                        .then(() => showNotification('কপি করা হয়েছে!', 'success'))
+                        .catch(() => showNotification('কপি করতে ব্যর্থ হয়েছে!', 'error'));
+                }
+            } else {
+                showNotification('কপি করার মতো কিছু নেই!', 'warning');
+            }
+        });
+
+        // Clear function - কোনো alert নেই, শুধু notification
+        clearBtn.addEventListener('click', () => {
+            inputText.value = '';
+            outputText.value = '';
+            inputText.focus();
+            
+            showNotification('সব ক্লিয়ার করা হয়েছে!', 'success');
+        });
+
+        // Real-time processing
+        inputText.addEventListener('input', processText);
+        
+        // Initialize with example
+        inputText.focus();
+        setTimeout(() => {
+            processText();
+        }, 100);
+    </script>
+</body>
+</html>

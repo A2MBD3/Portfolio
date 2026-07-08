@@ -9,27 +9,32 @@ class DynamicPortfolio {
     }
 
     async init() {
-        try {
-            const response = await fetch('a2mbd3.json');
-            if (!response.ok) throw new Error('Failed to load data');
-            this.data = await response.json();
-            
-            this.setMetaTags();
-            this.applyTheme();
-            this.buildApp();
-            this.setupRain();
-            this.setupNavigation();
-            this.setupCopyListeners();
-            this.setupShareButton();
-            this.setupContactForm();
-            this.startImageRotation();
-            this.updateYear();
-            this.switchSection('home');
-        } catch (error) {
-            console.error('Error:', error);
-            this.showError('ডাটা লোড করতে ব্যর্থ হয়েছে');
-        }
+    try {
+        const response = await fetch('a2mbd3.json');
+        if (!response.ok) throw new Error('Failed to load data');
+        this.data = await response.json();
+        
+        this.setMetaTags();
+        this.applyTheme();
+        this.buildApp();
+        this.setupRain();
+        this.setupNavigation();
+        this.setupCopyListeners();
+        this.setupShareButton();
+        this.setupContactForm();
+        this.startImageRotation();
+        this.updateYear();
+        this.switchSection('home');
+        
+        // ✅ এই দুই লাইন থাকতে হবে:
+        window.dynamicPortfolio = this;
+        document.dispatchEvent(new CustomEvent('portfolioReady', { detail: this }));
+        
+    } catch (error) {
+        console.error('Error:', error);
+        this.showError('ডাটা লোড করতে ব্যর্থ হয়েছে');
     }
+}
 
     setMetaTags() {
         if (this.data.site) {
@@ -67,19 +72,19 @@ class DynamicPortfolio {
     }
 
     buildApp() {
-    const app = document.getElementById('app');
-    if (!app) return;
-    
-    app.innerHTML = `
-        ${this.data.theme?.rainEffect !== false ? '<div class="rain-container" id="rainContainer"></div>' : ''}
-        ${this.buildNavigation()}
-        <main>
-            ${this.buildAllSections()}
-        </main>
-        ${this.buildFooter()}
-        <div class="notification-container" id="notificationArea"></div>
-    `;
-}
+        const app = document.getElementById('app');
+        if (!app) return;
+        
+        app.innerHTML = `
+            ${this.data.theme?.rainEffect !== false ? '<div class="rain-container" id="rainContainer"></div>' : ''}
+            ${this.buildNavigation()}
+            <main>
+                ${this.buildAllSections()}
+            </main>
+            ${this.buildFooter()}
+            <div class="notification-container" id="notificationArea"></div>
+        `;
+    }
 
     buildProfileSection() {
         const images = this.getImages();
@@ -139,30 +144,30 @@ class DynamicPortfolio {
     }
 
     buildAllSections() {
-    return `
-        ${this.buildHomeSection()}
-        ${this.buildContactSection()}
-        ${this.buildProjectsSection()}
-    `;
-}
+        return `
+            ${this.buildHomeSection()}
+            ${this.buildContactSection()}
+            ${this.buildProjectsSection()}
+        `;
+    }
 
     buildHomeSection() {
-    const personal = this.data.personal || {};
-    const profileDetails = this.data.profileDetails || [];
-    const aboutItems = this.data.aboutItems || [];
-    const hobbies = this.data.hobbies || [];
-    const skills = this.data.skills || [];
-    
-    return `
-        <section id="home" class="section active">
-            ${this.buildProfileSection()}
-            ${this.buildProfileInfoCard(personal, profileDetails)}
-            ${this.buildAboutSection(personal, aboutItems)}
-            ${this.buildHobbiesSection(hobbies)}
-            ${this.buildSkillsSection(skills)}
-        </section>
-    `;
-}
+        const personal = this.data.personal || {};
+        const profileDetails = this.data.profileDetails || [];
+        const aboutItems = this.data.aboutItems || [];
+        const hobbies = this.data.hobbies || [];
+        const skills = this.data.skills || [];
+        
+        return `
+            <section id="home" class="section active">
+                ${this.buildProfileSection()}
+                ${this.buildProfileInfoCard(personal, profileDetails)}
+                ${this.buildAboutSection(personal, aboutItems)}
+                ${this.buildHobbiesSection(hobbies)}
+                ${this.buildSkillsSection(skills)}
+            </section>
+        `;
+    }
 
     buildProfileInfoCard(person, details) {
         if (!person.name && details.length === 0) return '';
@@ -342,6 +347,9 @@ class DynamicPortfolio {
                             </div>
                         `;
                     }).join('')}
+                    
+                    <!-- SMS Handler will add phone and social link fields here -->
+                    
                     <button type="submit" class="submit-btn" id="submitBtn">
                         <i class="fas fa-paper-plane"></i>
                         <span>${formConfig.submitButtonText || 'মেসেজ পাঠান'}</span>
@@ -356,6 +364,11 @@ class DynamicPortfolio {
         if (!form) return;
 
         form.addEventListener('submit', async (e) => {
+            // SMS Handler will intercept this if active
+            if (window.smsHandler && window.smsHandler.isActive) {
+                return; // Let SMS handler process it
+            }
+            
             e.preventDefault();
             
             if (this.isSubmitting) return;
@@ -366,7 +379,6 @@ class DynamicPortfolio {
                 data[key] = value;
             });
 
-            // Validate required fields
             const fields = this.data.contactForm?.fields || [];
             for (const field of fields) {
                 if (field.required && !data[field.name]) {
@@ -375,13 +387,11 @@ class DynamicPortfolio {
                 }
             }
 
-            // Validate email format
             if (data.email && !this.isValidEmail(data.email)) {
                 this.showToast('⚠️', 'অনুগ্রহ করে সঠিক ইমেইল লিখুন');
                 return;
             }
 
-            // Disable form
             this.isSubmitting = true;
             const submitBtn = document.getElementById('submitBtn');
             if (submitBtn) {
@@ -393,7 +403,6 @@ class DynamicPortfolio {
                 const apiEndpoint = this.data.contactForm?.apiEndpoint || 'https://u.a2mbd3.workers.dev/';
                 const ownerId = this.data.owner?.id || '8074495633';
                 
-                // Build API URL with correct parameters
                 const params = new URLSearchParams();
                 params.append('m', '1');
                 params.append('to', ownerId);
@@ -404,8 +413,6 @@ class DynamicPortfolio {
                 
                 const url = `${apiEndpoint}?${params.toString()}`;
                 
-                console.log('Sending to:', url); // Debug log
-                
                 const response = await fetch(url);
                 const result = await response.json();
 
@@ -414,7 +421,6 @@ class DynamicPortfolio {
                     form.reset();
                 } else {
                     this.showToast('❌', this.data.contactForm?.errorMessage || 'মেসেজ পাঠাতে ব্যর্থ হয়েছে');
-                    console.error('API Error:', result.error);
                 }
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -689,6 +695,7 @@ class DynamicPortfolio {
     }
 }
 
+// Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     new DynamicPortfolio();
 });

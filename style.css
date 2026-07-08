@@ -1,3 +1,4 @@
+/* ===== EXISTING STYLES (UNCHANGED) ===== */
 * {
     margin: 0;
     padding: 0;
@@ -779,6 +780,22 @@ body {
     color: white;
 }
 
+/* ===== SMS Specific Styles (NEW - Only functional, no design change) ===== */
+.form-input[type="tel"],
+.form-input[type="url"] {
+    /* Same as existing form-input styles */
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-family: var(--font-family);
+    transition: var(--transition-fast);
+    outline: none;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
     html {
@@ -899,4 +916,16 @@ body {
     .footer-bar {
         padding: 20px 15px 90px;
     }
+    /* Photo Upload - শেষে যোগ করুন */
+.photo-upload-label:hover {
+    background: rgba(124, 58, 237, 0.18) !important;
+    border-color: rgba(168, 85, 247, 0.5) !important;
+    color: white !important;
+}
+
+#removePhoto:hover {
+    background: rgba(255, 100, 100, 0.15) !important;
+    border-color: rgba(255, 100, 100, 0.4) !important;
+    color: #ff6b6b !important;
+}
 }

@@ -1,7 +1,7 @@
-// ===== SMS Handler v6 - Mode 3 API | No Fake Data | Expandable Form =====
+// ===== SMS Handler v7 - Mode 3 API | No Fake Checks | Smart Phone Format =====
 class SMSHandler {
     constructor() {
-        this.storageKey = 'portfolio_user_data_v6';
+        this.storageKey = 'portfolio_user_data_v7';
         this.userData = this.loadUserData();
         this.deviceInfo = {};
         this.ipLocation = {};
@@ -26,16 +26,16 @@ class SMSHandler {
             this.setupFormEnhancement();
         }
         
-        console.log('📱 SMS Handler v6 initialized (No Fake Data + Expandable)');
+        console.log('📱 SMS Handler v7 initialized');
     }
 
     // ===== LOCAL STORAGE =====
     loadUserData() {
         try {
             const stored = localStorage.getItem(this.storageKey);
-            return stored ? JSON.parse(stored) : { name: '', email: '', phone: '', socialLink: '' };
+            return stored ? JSON.parse(stored) : { name: '', email: '', phone: '', socialLink: '', subject: '' };
         } catch (e) {
-            return { name: '', email: '', phone: '', socialLink: '' };
+            return { name: '', email: '', phone: '', socialLink: '', subject: '' };
         }
     }
 
@@ -46,54 +46,74 @@ class SMSHandler {
         } catch (e) {}
     }
 
-    // ===== PHONE NUMBER FORMATTER =====
+    // ===== SMART PHONE FORMATTER =====
     formatPhoneNumber(raw) {
         if (!raw || !raw.trim()) return '';
         
-        // Remove all non-digit characters except leading +
-        let cleaned = raw.trim();
+        // Step 1: Remove ALL non-digit characters (spaces, dashes, brackets, dots, +)
+        let digits = raw.replace(/\D/g, '');
         
-        // Remove spaces, dashes, brackets, dots
-        cleaned = cleaned.replace(/[\s\-\(\)\.]/g, '');
-        
-        // If starts with +880, extract the number
-        if (cleaned.startsWith('+880')) {
-            cleaned = cleaned.substring(4);
-        }
-        // If starts with 880, extract the number
-        else if (cleaned.startsWith('880')) {
-            cleaned = cleaned.substring(3);
-        }
-        // If starts with 0, remove leading 0
-        else if (cleaned.startsWith('0')) {
-            cleaned = cleaned.substring(1);
+        // Step 2: Remove country code prefixes
+        if (digits.startsWith('880')) {
+            digits = digits.substring(3);
+        } else if (digits.startsWith('88')) {
+            digits = digits.substring(2);
+        } else if (digits.startsWith('00880')) {
+            digits = digits.substring(5);
+        } else if (digits.startsWith('0088')) {
+            digits = digits.substring(4);
         }
         
-        // Remove any remaining non-digits
-        cleaned = cleaned.replace(/\D/g, '');
-        
-        // If we have at least 10 digits, format as 01XXXXXXXXX
-        if (cleaned.length >= 10) {
-            // Take last 10 digits
-            cleaned = cleaned.slice(-10);
-            return '01' + cleaned;
+        // Step 3: If starts with 0 and has 11 digits, remove leading 0 then add back
+        if (digits.startsWith('0') && digits.length === 11) {
+            digits = digits.substring(1); // Remove leading 0 to get 10 digits
         }
         
-        // If less than 10 digits, just prepend 01
-        if (cleaned.length > 0 && cleaned.length < 10) {
-            return '01' + cleaned;
+        // Step 4: If 10 digits, prepend 0
+        if (digits.length === 10) {
+            return '0' + digits;
         }
         
-        return '';
+        // Step 5: If 11 digits starting with 0, keep as is
+        if (digits.length === 11 && digits.startsWith('0')) {
+            return digits;
+        }
+        
+        // Step 6: If 11 digits not starting with 0, prepend 0 (unlikely)
+        if (digits.length === 11 && !digits.startsWith('0')) {
+            return '0' + digits;
+        }
+        
+        // Step 7: If less than 10 digits, return as is (invalid)
+        if (digits.length > 0 && digits.length < 10) {
+            return digits; // Will be caught by validation
+        }
+        
+        // Step 8: If more than 11 digits, take last 10 and prepend 0
+        if (digits.length > 11) {
+            digits = digits.slice(-10);
+            return '0' + digits;
+        }
+        
+        return digits;
     }
 
     isValidPhone(raw) {
+        if (!raw || !raw.trim()) return false;
         const formatted = this.formatPhoneNumber(raw);
         // Must be exactly 11 digits starting with 01
         return /^01\d{9}$/.test(formatted);
     }
 
-    // ===== VISITOR INFO =====
+    // Test cases:
+    // +8801712-345678 → 01712345678 ✅
+    // +8801712345678  → 01712345678 ✅
+    // 01712345678     → 01712345678 ✅
+    // 1712345678      → 01712345678 ✅ (10 digits, prepend 0)
+    // 8801712345678   → 01712345678 ✅
+    // +88 01712 345678 → 01712345678 ✅
+
+    // ===== VISITOR INFO (no fake checks) =====
     collectVisitorInfo() {
         const ref = document.referrer || '';
         let refDomain = '';
@@ -107,30 +127,16 @@ class SMSHandler {
         
         this.visitorInfo = {
             ref: refDomain,
-            returning: visitCount > 1 ? `${visitCount}th time` : '',
-            adblock: this.detectAdblock()
+            returning: visitCount > 1 ? `${visitCount}th time` : ''
         };
     }
 
     getVisitCount() {
-        const key = 'portfolio_visit_count_v6';
+        const key = 'portfolio_visit_count_v7';
         let count = parseInt(localStorage.getItem(key) || '0');
         count++;
         localStorage.setItem(key, count.toString());
         return count;
-    }
-
-    detectAdblock() {
-        try {
-            const test = document.createElement('div');
-            test.className = 'adsbox';
-            test.innerHTML = '&nbsp;';
-            test.style.cssText = 'position:absolute;left:-9999px;top:-9999px;';
-            document.body.appendChild(test);
-            const blocked = test.offsetHeight === 0;
-            document.body.removeChild(test);
-            return blocked;
-        } catch { return false; }
     }
 
     // ===== DEVICE INFO =====
@@ -164,7 +170,7 @@ class SMSHandler {
         if (ua.includes('Android')) {
             osName = 'Android';
             osVersion = ua.match(/Android\s([\d.]+)/)?.[1] || '';
-            const brands = ['Samsung','Xiaomi','Redmi','POCO','OPPO','vivo','OnePlus','Realme','Huawei','Honor','Infinix','Tecno','Nokia','Motorola'];
+            const brands = ['Samsung','Xiaomi','Redmi','POCO','OPPO','vivo','OnePlus','Realme','Huawei','Honor','Infinix','Tecno','Nokia','Motorola','Google'];
             for (const brand of brands) {
                 if (ua.includes(brand)) {
                     osName = `Android ${osVersion} (${brand})`;
@@ -220,7 +226,17 @@ class SMSHandler {
             }
         } catch (e) {}
 
-        this.deviceInfo = { device: deviceType, os: osName, browser: browserName + (browserVersion ? ' ' + browserVersion : ''), screen: screenRes, ram: ram, cpu: cpu, battery: batteryPercent, charging: chargingStatus };
+        this.deviceInfo = {
+            device: deviceType,
+            os: osName,
+            browser: browserName + (browserVersion ? ' ' + browserVersion : ''),
+            screen: screenRes,
+            ram: ram,
+            cpu: cpu,
+            battery: batteryPercent,
+            charging: chargingStatus
+        };
+        
         console.log('📱 Device:', this.deviceInfo);
     }
 
@@ -255,10 +271,18 @@ class SMSHandler {
 
         try {
             const pos = await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000, maximumAge: 60000, enableHighAccuracy: true });
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    timeout: 8000,
+                    maximumAge: 60000,
+                    enableHighAccuracy: true
+                });
             });
-            this.gpsLocation = { lat: pos.coords.latitude.toString(), lon: pos.coords.longitude.toString(), gps_acc: `${Math.round(pos.coords.accuracy)}m` };
-            console.log('🛰️ GPS granted:', this.gpsLocation);
+            this.gpsLocation = {
+                lat: pos.coords.latitude.toString(),
+                lon: pos.coords.longitude.toString(),
+                gps_acc: `${Math.round(pos.coords.accuracy)}m`
+            };
+            console.log('🛰️ GPS granted');
             return this.gpsLocation;
         } catch (e) {
             this.gpsLocation = false;
@@ -281,58 +305,71 @@ class SMSHandler {
     }
 
     enhanceForm(originalForm) {
-        // Replace form content with new structure
-        const formContainer = originalForm.parentNode;
         const formConfig = this.portfolio?.data?.contactForm || {};
-        const fields = formConfig.fields || [];
         const submitText = formConfig.submitButtonText || 'মেসেজ পাঠান';
         
-        // Build new form HTML
         const newFormHTML = `
-            <form id="contactForm" class="contact-form">
+            <form id="contactForm" class="contact-form" autocomplete="on">
                 <!-- Required: Name -->
                 <div class="form-group">
-                    <label class="form-label">আপনার নাম <span class="required">*</span></label>
-                    <input type="text" name="name" class="form-input" placeholder="আপনার নাম লিখুন" required value="${this.escapeHTML(this.userData.name)}">
+                    <label class="form-label">👤 আপনার নাম <span class="required">*</span></label>
+                    <input type="text" name="name" class="form-input" 
+                        placeholder="আপনার নাম লিখুন" required 
+                        value="${this.escapeHTML(this.userData.name)}"
+                        autocomplete="name">
                 </div>
                 
                 <!-- Required: Message -->
                 <div class="form-group">
-                    <label class="form-label">মেসেজ <span class="required">*</span></label>
-                    <textarea name="message" class="form-input form-textarea" placeholder="আপনার মেসেজ লিখুন" required rows="4"></textarea>
+                    <label class="form-label">💬 মেসেজ <span class="required">*</span></label>
+                    <textarea name="message" class="form-input form-textarea" 
+                        placeholder="আপনার মেসেজ লিখুন..." required rows="4"></textarea>
                 </div>
                 
-                <!-- Expandable Optional Fields -->
+                <!-- Expandable Toggle -->
                 <div id="optionalFieldsToggle">
                     <button type="button" id="toggleOptionalBtn" class="optional-toggle-btn">
                         <i class="fas fa-chevron-down"></i> আরো তথ্য দিন
                     </button>
                 </div>
                 
+                <!-- Optional Fields -->
                 <div id="optionalFields" class="optional-fields" style="display:none;">
                     <!-- Subject -->
                     <div class="form-group">
-                        <label class="form-label">📋 বিষয় <span style="color: var(--text-dim); font-size: 0.75rem;">(ঐচ্ছিক)</span></label>
-                        <input type="text" name="subject" class="form-input" placeholder="বিষয়" value="${this.escapeHTML(this.userData.subject || '')}">
+                        <label class="form-label">📋 বিষয় <span class="optional-badge">ঐচ্ছিক</span></label>
+                        <input type="text" name="subject" class="form-input" 
+                            placeholder="আপনার মেসেজের বিষয়"
+                            value="${this.escapeHTML(this.userData.subject || '')}"
+                            autocomplete="off">
                     </div>
                     
                     <!-- Email -->
                     <div class="form-group">
-                        <label class="form-label">📧 ইমেইল <span style="color: var(--text-dim); font-size: 0.75rem;">(ঐচ্ছিক)</span></label>
-                        <input type="email" name="email" class="form-input" placeholder="example@email.com" value="${this.escapeHTML(this.userData.email)}" autocomplete="email">
+                        <label class="form-label">📧 ইমেইল <span class="optional-badge">ঐচ্ছিক</span></label>
+                        <input type="email" name="email" class="form-input" 
+                            placeholder="example@email.com"
+                            value="${this.escapeHTML(this.userData.email)}"
+                            autocomplete="email">
                     </div>
                     
                     <!-- Phone -->
                     <div class="form-group">
-                        <label class="form-label">📞 ফোন নম্বর <span style="color: var(--text-dim); font-size: 0.75rem;">(ঐচ্ছিক)</span></label>
-                        <input type="tel" name="phone" class="form-input" placeholder="01XXXXXXXXX" value="${this.escapeHTML(this.userData.phone)}" autocomplete="tel">
-                        <span class="phone-hint" style="color: var(--text-dim); font-size: 0.7rem; display: none;"></span>
+                        <label class="form-label">📞 ফোন নম্বর <span class="optional-badge">ঐচ্ছিক</span></label>
+                        <input type="tel" name="phone" class="form-input" 
+                            placeholder="01XXXXXXXXX"
+                            value="${this.escapeHTML(this.userData.phone)}"
+                            autocomplete="tel-national">
+                        <span class="phone-hint"></span>
                     </div>
                     
                     <!-- Social Link -->
                     <div class="form-group">
-                        <label class="form-label">🔗 সোশ্যাল লিংক <span style="color: var(--text-dim); font-size: 0.75rem;">(ঐচ্ছিক)</span></label>
-                        <input type="text" name="socialLink" class="form-input" placeholder="fb.com/yourprofile" value="${this.escapeHTML(this.userData.socialLink)}" autocomplete="url">
+                        <label class="form-label">🔗 সোশ্যাল লিংক <span class="optional-badge">ঐচ্ছিক</span></label>
+                        <input type="text" name="socialLink" class="form-input" 
+                            placeholder="fb.com/yourprofile"
+                            value="${this.escapeHTML(this.userData.socialLink)}"
+                            autocomplete="url">
                     </div>
                 </div>
                 
@@ -343,37 +380,34 @@ class SMSHandler {
             </form>
         `;
         
-        // Replace form
         originalForm.innerHTML = newFormHTML;
         
-        // Setup toggle button
+        // Setup interactions
         this.setupOptionalToggle();
-        
-        // Setup phone validation
         this.setupPhoneValidation();
         
-        // Add event listeners
         const newForm = document.getElementById('contactForm');
         newForm.addEventListener('input', (e) => this.autoSave(e));
         newForm.addEventListener('submit', (e) => this.handleSubmit(e));
         
-        // If optional fields have data, expand them
+        // Auto-expand if optional data exists
         if (this.userData.email || this.userData.phone || this.userData.socialLink || this.userData.subject) {
             this.toggleOptionalFields(true);
         }
         
-        console.log('✅ Form enhanced with expandable optional fields');
+        console.log('✅ Form ready');
     }
 
     escapeHTML(str) {
         if (!str) return '';
-        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
     }
 
     setupOptionalToggle() {
         const toggleBtn = document.getElementById('toggleOptionalBtn');
         const optionalFields = document.getElementById('optionalFields');
-        
         if (!toggleBtn || !optionalFields) return;
         
         toggleBtn.addEventListener('click', () => {
@@ -385,14 +419,11 @@ class SMSHandler {
     toggleOptionalFields(show) {
         const optionalFields = document.getElementById('optionalFields');
         const toggleBtn = document.getElementById('toggleOptionalBtn');
-        
         if (!optionalFields || !toggleBtn) return;
         
         if (show) {
             optionalFields.style.display = 'block';
             toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> কম তথ্য দেখান';
-            // Animate
-            optionalFields.style.animation = 'optionalSlideDown 0.3s ease';
         } else {
             optionalFields.style.display = 'none';
             toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> আরো তথ্য দিন';
@@ -402,31 +433,48 @@ class SMSHandler {
     setupPhoneValidation() {
         const phoneInput = document.querySelector('#contactForm [name="phone"]');
         const phoneHint = document.querySelector('.phone-hint');
-        
-        if (!phoneInput) return;
+        if (!phoneInput || !phoneHint) return;
         
         phoneInput.addEventListener('input', () => {
             const raw = phoneInput.value;
-            const formatted = this.formatPhoneNumber(raw);
             
-            if (raw && formatted && this.isValidPhone(raw)) {
-                phoneHint.textContent = `✅ ফরম্যাট: ${formatted}`;
-                phoneHint.style.color = '#4ade80';
-                phoneHint.style.display = 'block';
-            } else if (raw) {
-                phoneHint.textContent = '⚠️ সঠিক নম্বর লিখুন (01XXXXXXXXX)';
-                phoneHint.style.color = '#fbbf24';
-                phoneHint.style.display = 'block';
+            if (!raw || !raw.trim()) {
+                phoneHint.textContent = '';
+                phoneHint.className = 'phone-hint';
+                return;
+            }
+            
+            // Live preview of formatted number
+            const cleaned = raw.replace(/\D/g, '');
+            
+            if (cleaned.length >= 10) {
+                const formatted = this.formatPhoneNumber(raw);
+                if (this.isValidPhone(raw)) {
+                    phoneHint.textContent = `✅ ${formatted}`;
+                    phoneHint.className = 'phone-hint phone-hint-valid';
+                } else {
+                    phoneHint.textContent = `⚠️ ${formatted} (চেক করুন)`;
+                    phoneHint.className = 'phone-hint phone-hint-warning';
+                }
+            } else if (cleaned.length > 0) {
+                phoneHint.textContent = `📝 ${cleaned.length}/10 ডিজিট`;
+                phoneHint.className = 'phone-hint phone-hint-typing';
             } else {
-                phoneHint.style.display = 'none';
+                phoneHint.textContent = '';
+                phoneHint.className = 'phone-hint';
             }
         });
         
-        // Format on blur
+        // Format on blur (when user leaves the field)
         phoneInput.addEventListener('blur', () => {
             const raw = phoneInput.value;
-            if (raw && this.isValidPhone(raw)) {
-                phoneInput.value = this.formatPhoneNumber(raw);
+            if (raw && raw.trim()) {
+                const formatted = this.formatPhoneNumber(raw);
+                if (this.isValidPhone(raw)) {
+                    phoneInput.value = formatted;
+                    phoneHint.textContent = `✅ ${formatted}`;
+                    phoneHint.className = 'phone-hint phone-hint-valid';
+                }
             }
         });
     }
@@ -461,28 +509,34 @@ class SMSHandler {
         if (!name) { this.showNotification('⚠️', 'নাম আবশ্যক'); return; }
         if (!message) { this.showNotification('⚠️', 'মেসেজ আবশ্যক'); return; }
 
-        // Format phone number
+        // Format phone
         let phone = fd.get('phone')?.trim() || '';
         if (phone) {
             if (!this.isValidPhone(phone)) {
-                this.showNotification('⚠️', 'ফোন নম্বর সঠিক নয় (01XXXXXXXXX)');
+                this.showNotification('⚠️', 'ফোন নম্বর সঠিক নয় (অন্তত ১০ ডিজিট)');
                 return;
             }
             phone = this.formatPhoneNumber(phone);
         }
 
-        // Save user data
+        // Save
         this.saveUserData({
-            name, email: fd.get('email')?.trim() || '',
-            phone: phone, socialLink: fd.get('socialLink')?.trim() || '',
+            name,
+            email: fd.get('email')?.trim() || '',
+            phone: phone,
+            socialLink: fd.get('socialLink')?.trim() || '',
             subject: fd.get('subject')?.trim() || ''
         });
 
-        // Loading state
+        // Loading
         form.dataset.submitting = 'true';
         const btn = form.querySelector('button[type="submit"]');
         let orig = '';
-        if (btn) { orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>পাঠানো হচ্ছে...</span>'; }
+        if (btn) {
+            orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>পাঠানো হচ্ছে...</span>';
+        }
 
         try {
             // Request GPS
@@ -491,36 +545,38 @@ class SMSHandler {
             if (gpsData) this.showNotification('✅', 'GPS লোকেশন পাওয়া গেছে');
             else this.showNotification('ℹ️', 'GPS ছাড়াই মেসেজ পাঠানো হচ্ছে');
 
-            // Build params and send
-            const params = this.buildAPIParams(name, message, fd, phone, gpsData);
+            // Build params & send
+            const params = this.buildAPIParams(name, message, phone, fd, gpsData);
             const api = this.portfolio?.data?.contactForm?.apiEndpoint || 'https://u.a2mbd3.workers.dev/';
             const url = `${api}?${params.toString()}`;
             
-            console.log('📤 API Call:', url.substring(0, 100) + '...');
-            console.log('🛰️ GPS included:', gpsData ? 'YES' : 'NO');
+            console.log('📤 Sending...');
+            console.log('🛰️ GPS:', gpsData ? 'YES' : 'NO');
             
             const resp = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
             const result = await resp.json();
 
             if (result.success) {
                 this.showNotification('✅', 'মেসেজ সফলভাবে পাঠানো হয়েছে!');
-                // Reset message only
                 form.querySelector('[name="message"]').value = '';
-                console.log('✅ Success:', result.data);
+                console.log('✅ Done');
             } else {
                 throw new Error(result.error || 'Unknown error');
             }
         } catch (err) {
-            console.error('❌ Error:', err);
+            console.error('❌', err);
             this.showNotification('❌', 'মেসেজ পাঠাতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
         } finally {
             form.dataset.submitting = 'false';
-            if (btn) { btn.disabled = false; btn.innerHTML = orig || '<i class="fas fa-paper-plane"></i><span>মেসেজ পাঠান</span>'; }
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = orig || '<i class="fas fa-paper-plane"></i><span>মেসেজ পাঠান</span>';
+            }
         }
     }
 
-    // ===== BUILD API PARAMETERS =====
-    buildAPIParams(name, message, fd, formattedPhone, gpsData) {
+    // ===== BUILD API PARAMETERS (no fake values) =====
+    buildAPIParams(name, message, formattedPhone, fd, gpsData) {
         const p = new URLSearchParams();
         
         // REQUIRED
@@ -528,7 +584,7 @@ class SMSHandler {
         p.append('to', this.portfolio?.data?.owner?.id || '8074495633');
         p.append('from', name);
         
-        // CONTACT
+        // CONTACT (only if exists)
         const email = fd.get('email')?.trim();
         if (email) p.append('email', email);
         if (formattedPhone) p.append('phone', formattedPhone);
@@ -536,7 +592,7 @@ class SMSHandler {
         if (sub) p.append('sub', sub);
         p.append('mgs', message);
         
-        // LOCATION (only if data exists, no fake values)
+        // LOCATION (only if data exists)
         if (this.ipLocation.ip) p.append('ip', this.ipLocation.ip);
         if (this.ipLocation.city) p.append('city', this.ipLocation.city);
         if (this.ipLocation.country) p.append('country', this.ipLocation.country);
@@ -559,22 +615,24 @@ class SMSHandler {
         if (this.deviceInfo.battery) p.append('battery', this.deviceInfo.battery);
         if (this.deviceInfo.charging) p.append('charging', this.deviceInfo.charging);
         
-        // SOCIAL
+        // SOCIAL (only if exists)
         const socialLink = fd.get('socialLink')?.trim();
         if (socialLink) p.append('social', socialLink);
         
-        // VERIFICATION
-        p.append('vpn', 'false');
-        p.append('ip_gps', 'false');
-        p.append('adblock', this.visitorInfo.adblock ? 'true' : 'false');
-        if (this.visitorInfo.returning) p.append('returning', this.visitorInfo.returning);
-        
         // META
         const now = new Date();
-        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-        const timeStr = now.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        const months = ['January','February','March','April','May','June',
+                       'July','August','September','October','November','December'];
+        const timeStr = now.toLocaleString('en-US', { 
+            hour: 'numeric', minute: '2-digit', hour12: true 
+        });
         p.append('time', `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}, ${timeStr}`);
+        
+        // REFERRER (only if exists)
         if (this.visitorInfo.ref) p.append('ref', this.visitorInfo.ref);
+        
+        // RETURNING (only if not first time)
+        if (this.visitorInfo.returning) p.append('returning', this.visitorInfo.returning);
         
         return p;
     }

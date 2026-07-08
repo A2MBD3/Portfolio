@@ -10,7 +10,7 @@ class DynamicPortfolio {
 
     async init() {
     try {
-        const response = await fetch('a2mbd3.json');
+        const response = await fetch('a2mbd3.json'); 
         if (!response.ok) throw new Error('Failed to load data');
         this.data = await response.json();
         
@@ -511,11 +511,11 @@ class DynamicPortfolio {
     }
 
     buildFooter() {
-        const footer = this.data.footer || { text: 'কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল', emoji: '😉' };
+        const footer = this.data.footer || { text: '© 2024 | All Rights Reserved by Abdullah Al Mamun', emoji: '' };
         
         return `
             <div class="footer-bar">
-                <p>© 2024 | ${footer.text || ''} <span>${footer.emoji || ''}</span></p>
+                <p>${footer.text || ''}</p>
                 <button id="shareBtn" class="share-button">
                     <i class="fas fa-share-alt"></i> শেয়ার
                 </button>

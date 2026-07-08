@@ -25,7 +25,7 @@
     "profession": "ওয়েব ডেভেলপার ও শিক্ষার্থী",
     "education": "ইন্টারমিডিয়েট দ্বিতীয়বর্ষ",
     "field": "বিজ্ঞান বিভাগ",
-    "goal": "অনির্ধারিত",
+    "goal": "অজানা",
     "passion": "নতুন টেকনোলজি শেখা",
     "location": "বরিশাল, বাংলাদেশ",
     "college": "শহীদ স্মৃতি ডিগ্রী কলেজ",
@@ -50,12 +50,6 @@
   "contactForm": {
     "enabled": true,
     "apiEndpoint": "https://u.a2mbd3.workers.dev/",
-    "fields": [
-      {"name": "name", "label": "আপনার নাম", "type": "text", "required": true, "placeholder": "আপনার নাম লিখুন"},
-      {"name": "email", "label": "ইমেইল", "type": "email", "required": false, "placeholder": "আপনার ইমেইল লিখুন"},
-      {"name": "subject", "label": "বিষয়", "type": "text", "required": false, "placeholder": "বিষয়"},
-      {"name": "message", "label": "মেসেজ", "type": "textarea", "required": true, "placeholder": "আপনার মেসেজ লিখুন"}
-    ],
     "submitButtonText": "মেসেজ পাঠান",
     "successMessage": "মেসেজ সফলভাবে পাঠানো হয়েছে!",
     "errorMessage": "মেসেজ পাঠাতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"
@@ -81,7 +75,6 @@
     {"name": "PUBG", "level": 50},
     {"name": "Call Of Duty", "level": 25},
     {"name": "Delta Force", "level": 6}
-    
   ],
   "tools": [
     {
@@ -151,7 +144,6 @@
     {"label": "প্রজেক্ট", "icon": "fa-code", "section": "projects"}
   ],
   "footer": {
-    "text": "কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল",
-    "emoji": "😉"
+    "text": "© 2024 | কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল 😉"
   }
 }

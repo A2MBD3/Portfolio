@@ -131,6 +131,12 @@
       "description": "হুদাই অনেক আগে বানাইছিলম",
       "icon": "fa-gamepad",
       "link": "/p/ttt.html"
+    },
+    {
+      "name": "device info",
+      "description": "হুদাই অনেক আগে বানাইছিলম",
+      "icon": "fa-gamepad",
+      "link": "/p/info.html"
     }
   ],
   "images": {

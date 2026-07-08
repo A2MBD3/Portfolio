@@ -927,5 +927,58 @@ body {
     background: rgba(255, 100, 100, 0.15) !important;
     border-color: rgba(255, 100, 100, 0.4) !important;
     color: #ff6b6b !important;
+    
+    
+}
+/* ===== Expandable Optional Fields ===== */
+.optional-toggle-btn {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(124, 58, 237, 0.04);
+    border: 1px dashed rgba(168, 85, 247, 0.2);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-family: var(--font-family);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition-fast);
+    margin-bottom: 10px;
+}
+
+.optional-toggle-btn:hover {
+    background: rgba(124, 58, 237, 0.1);
+    border-color: rgba(168, 85, 247, 0.4);
+    color: white;
+}
+
+.optional-toggle-btn i {
+    transition: transform 0.3s ease;
+}
+
+.optional-fields {
+    animation: optionalSlideDown 0.3s ease;
+}
+
+@keyframes optionalSlideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+        transform: translateY(0);
+    }
+}
+
+/* Phone hint */
+.phone-hint {
+    margin-top: 4px;
+    padding-left: 4px;
 }
 }

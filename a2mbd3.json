@@ -156,9 +156,9 @@
   ],
   "images": {
     "profile": [
-      "/assets/f.jpg"
+      "/assets/p.png"
     ],
-    "freefire_bg": "/assets/freefire-bg.jpg"
+    "freefire_bg": "/assets/f.jpg"
   },
   "navigation": [
     {"label": "হোম", "icon": "fa-home", "section": "home"},

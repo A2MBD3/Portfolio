@@ -20,6 +20,28 @@
     "rainEffect": true,
     "rainDropCount": 100
   },
+  
+  "music": {
+    "enabled": true,
+    "volume": 0.25,
+    "shakeToChange": true,
+    "shakeThreshold": 15,
+    "tracks": [
+      {
+        "name": "Calm Piano",
+        "url": "https://raw.githubusercontent.com/A2MBD3/Aincrad/main/assets/music/monume.mp3"
+      },
+      {
+        "name": "Soft Ambient",
+        "url": "https://raw.githubusercontent.com/A2MBD3/Aincrad/main/assets/music/apalonbeats.mp3"
+      },
+      {
+        "name": "Gentle Background",
+        "url": "https://raw.githubusercontent.com/A2MBD3/Aincrad/main/assets/music/alexmorgan.mp3"
+      }
+    ]
+  },
+
   "personal": {
     "name": "আবদুল্লাহ আল মামুন",
     "profession": "ওয়েব ডেভেলপার ও শিক্ষার্থী",

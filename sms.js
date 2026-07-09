@@ -1,7 +1,7 @@
-// ===== SMS Handler v8 - Mode 3 API | Default: Name+Subject+Message =====
+// ===== SMS Handler v9 - Mode 3 API | Subject: Visible Optional | Default <no subject> =====
 class SMSHandler {
     constructor() {
-        this.storageKey = 'portfolio_user_data_v8';
+        this.storageKey = 'portfolio_user_data_v9';
         this.userData = this.loadUserData();
         this.deviceInfo = {};
         this.ipLocation = {};
@@ -26,10 +26,10 @@ class SMSHandler {
             this.setupFormEnhancement();
         }
         
-        console.log('📱 SMS Handler v8 initialized');
+        console.log('📱 SMS Handler v9 initialized');
     }
 
-    // ===== LOCAL STORAGE (only email, phone, socialLink) =====
+    // ===== LOCAL STORAGE (only email, phone, socialLink - NOT subject) =====
     loadUserData() {
         try {
             const stored = localStorage.getItem(this.storageKey);
@@ -74,7 +74,7 @@ class SMSHandler {
         try {
             if (ref && ref !== '') refDomain = new URL(ref).hostname.replace('www.', '');
         } catch { refDomain = ref; }
-        const key = 'portfolio_visit_count_v8';
+        const key = 'portfolio_visit_count_v9';
         let count = parseInt(localStorage.getItem(key) || '0');
         count++;
         localStorage.setItem(key, count.toString());
@@ -166,27 +166,32 @@ class SMSHandler {
         
         originalForm.innerHTML = `
             <form id="contactForm" class="contact-form" autocomplete="on">
+                <!-- Required: Name -->
                 <div class="form-group">
                     <label class="form-label">👤 আপনার নাম <span class="required">*</span></label>
                     <input type="text" name="name" class="form-input" placeholder="আপনার নাম লিখুন" required autocomplete="name">
                 </div>
                 
+                <!-- Optional: Subject (VISIBLE but NOT required) -->
                 <div class="form-group">
-                    <label class="form-label">📋 বিষয় <span class="required">*</span></label>
-                    <input type="text" name="subject" class="form-input" placeholder="আপনার মেসেজের বিষয়" required>
+                    <label class="form-label">📋 বিষয় <span class="optional-badge">ঐচ্ছিক</span></label>
+                    <input type="text" name="subject" class="form-input" placeholder="আপনার মেসেজের বিষয়">
                 </div>
                 
+                <!-- Required: Message -->
                 <div class="form-group">
                     <label class="form-label">💬 মেসেজ <span class="required">*</span></label>
                     <textarea name="message" class="form-input form-textarea" placeholder="আপনার মেসেজ লিখুন..." required rows="4"></textarea>
                 </div>
                 
+                <!-- Expandable Toggle -->
                 <div id="optionalFieldsToggle">
                     <button type="button" id="toggleOptionalBtn" class="optional-toggle-btn">
                         <i class="fas fa-chevron-${hasOptionalData ? 'up' : 'down'}"></i> আরো তথ্য দিন
                     </button>
                 </div>
                 
+                <!-- Hidden Optional Fields -->
                 <div id="optionalFields" class="optional-fields" style="display:${hasOptionalData ? 'block' : 'none'};">
                     <div class="form-group">
                         <label class="form-label">📧 ইমেইল <span class="optional-badge">ঐচ্ছিক</span></label>
@@ -219,7 +224,7 @@ class SMSHandler {
         newForm.addEventListener('input', (e) => this.autoSave(e));
         newForm.addEventListener('submit', (e) => this.handleSubmit(e));
         
-        console.log('✅ Form ready (Default: Name+Subject+Message)');
+        console.log('✅ Form ready (Subject: visible optional, default <no subject>)');
     }
 
     esc(s) { if(!s)return''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
@@ -275,11 +280,11 @@ class SMSHandler {
 
         const fd = new FormData(form);
         const name = fd.get('name')?.trim();
-        const subject = fd.get('subject')?.trim();
+        const subject = fd.get('subject')?.trim() || '<no-subject>';
         const message = fd.get('message')?.trim();
 
+        // Validate required fields
         if(!name){this.showNotification('⚠️','নাম আবশ্যক');return;}
-        if(!subject){this.showNotification('⚠️','বিষয় আবশ্যক');return;}
         if(!message){this.showNotification('⚠️','মেসেজ আবশ্যক');return;}
 
         let phone = fd.get('phone')?.trim()||'';
@@ -311,6 +316,7 @@ class SMSHandler {
             const url = `${api}?${params.toString()}`;
             
             console.log('📤 Sending... GPS:', gps?'YES':'NO');
+            console.log('📋 Subject:', subject);
             const resp = await fetch(url,{method:'GET',headers:{'Accept':'application/json'}});
             const result = await resp.json();
 
@@ -330,27 +336,35 @@ class SMSHandler {
 
     buildParams(name, subject, message, phone, fd, gps) {
         const p = new URLSearchParams();
+        
+        // REQUIRED
         p.append('m','3');
         p.append('to',this.portfolio?.data?.owner?.id||'8074495633');
         p.append('from',name);
-        p.append('sub',subject);
+        
+        // SUBJECT (always sent, default <no subject>)
+        p.append('sub', subject);
         p.append('mgs',message);
         
+        // CONTACT (only if exists)
         const email = fd.get('email')?.trim();
         if(email)p.append('email',email);
         if(phone)p.append('phone',phone);
         
+        // LOCATION (only if data exists)
         if(this.ipLocation.ip)p.append('ip',this.ipLocation.ip);
         if(this.ipLocation.city)p.append('city',this.ipLocation.city);
         if(this.ipLocation.country)p.append('country',this.ipLocation.country);
         if(this.ipLocation.isp)p.append('isp',this.ipLocation.isp);
         
+        // GPS (only if granted)
         if(gps&&gps.lat){
             p.append('lat',gps.lat);
             p.append('lon',gps.lon);
             if(gps.gps_acc)p.append('gps_acc',gps.gps_acc);
         }
         
+        // DEVICE (only if available)
         if(this.deviceInfo.device)p.append('device',this.deviceInfo.device);
         if(this.deviceInfo.os)p.append('os',this.deviceInfo.os);
         if(this.deviceInfo.browser)p.append('browser',this.deviceInfo.browser);
@@ -360,9 +374,11 @@ class SMSHandler {
         if(this.deviceInfo.battery)p.append('battery',this.deviceInfo.battery);
         if(this.deviceInfo.charging)p.append('charging',this.deviceInfo.charging);
         
+        // SOCIAL (only if exists)
         const social = fd.get('socialLink')?.trim();
         if(social)p.append('social',social);
         
+        // META
         const now = new Date();
         const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
         p.append('time',`${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}, ${now.toLocaleString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})}`);

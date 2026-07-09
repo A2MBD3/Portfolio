@@ -5,37 +5,291 @@ class DynamicPortfolio {
         this.currentImageIndex = 0;
         this.imageInterval = null;
         this.isSubmitting = false;
+        
+        // Music properties
+        this.musicEnabled = false;
+        this.musicVolume = 0.3;
+        this.currentTrackIndex = 0;
+        this.audio = null;
+        this.shakeEnabled = false;
+        this.shakeThreshold = 15;
+        this.lastShakeTime = 0;
+        this.shakeCooldown = 1000;
+        this.lastX = null;
+        this.lastY = null;
+        this.lastZ = null;
+        this.musicTracks = [];
+        this.failedTracks = new Set();
+        this.wasPlayingBeforeHidden = false;
+        
         this.init();
     }
 
     async init() {
-    try {
-        const response = await fetch('a2mbd3.json'); 
-        if (!response.ok) throw new Error('Failed to load data');
-        this.data = await response.json();
-        
-        this.setMetaTags();
-        this.applyTheme();
-        this.buildApp();
-        this.setupRain();
-        this.setupNavigation();
-        this.setupCopyListeners();
-        this.setupShareButton();
-        this.setupContactForm();
-        this.startImageRotation();
-        this.updateYear();
-        this.switchSection('home');
-        
-        // ✅ এই দুই লাইন থাকতে হবে:
-        window.dynamicPortfolio = this;
-        document.dispatchEvent(new CustomEvent('portfolioReady', { detail: this }));
-        
-    } catch (error) {
-        console.error('Error:', error);
-        this.showError('ডাটা লোড করতে ব্যর্থ হয়েছে');
+        try {
+            const response = await fetch('a2mbd3.json');
+            if (!response.ok) throw new Error('Failed to load data');
+            this.data = await response.json();
+            
+            this.setMetaTags();
+            this.applyTheme();
+            this.buildApp();
+            this.setupRain();
+            this.setupNavigation();
+            this.setupCopyListeners();
+            this.setupShareButton();
+            this.setupContactForm();
+            this.startImageRotation();
+            this.updateYear();
+            this.switchSection('home');
+            this.initMusic();
+            
+            window.dynamicPortfolio = this;
+            document.dispatchEvent(new CustomEvent('portfolioReady', { detail: this }));
+        } catch (error) {
+            console.error('Error:', error);
+            this.showError('ডাটা লোড করতে ব্যর্থ হয়েছে');
+        }
     }
-}
 
+    // ===== BACKGROUND MUSIC =====
+    initMusic() {
+        const musicConfig = this.data.music;
+        if (!musicConfig || !musicConfig.enabled) {
+            console.log('🎵 Music disabled in config');
+            return;
+        }
+
+        if (!musicConfig.tracks || musicConfig.tracks.length === 0) {
+            console.log('🎵 No tracks found');
+            return;
+        }
+
+        this.musicEnabled = true;
+        this.musicVolume = musicConfig.volume || 0.3;
+        this.shakeEnabled = musicConfig.shakeToChange !== false;
+        this.shakeThreshold = musicConfig.shakeThreshold || 15;
+        this.musicTracks = [...musicConfig.tracks];
+        this.failedTracks = new Set();
+        this.wasPlayingBeforeHidden = false;
+
+        this.audio = document.createElement('audio');
+        this.audio.id = 'bgMusic';
+        this.audio.style.display = 'none';
+        this.audio.preload = 'auto';
+        this.audio.volume = this.musicVolume;
+        this.audio.loop = false;
+        document.body.appendChild(this.audio);
+
+        this.selectRandomTrack();
+
+        this.audio.addEventListener('ended', () => {
+            this.playNextTrack();
+        });
+
+        this.audio.addEventListener('error', () => {
+            console.warn(`🎵 Failed to load: ${this.audio.src}`);
+            this.failedTracks.add(this.audio.src);
+            this.playNextTrack();
+        });
+
+        this.setupVisibilityHandler();
+        this.tryAutoplay();
+
+        if (this.shakeEnabled) {
+            this.setupShakeDetection();
+        }
+
+        console.log(`🎵 Music initialized | Volume: ${this.musicVolume * 100}% | Tracks: ${this.musicTracks.length} | Shake: ${this.shakeEnabled}`);
+    }
+
+    selectRandomTrack() {
+        const availableTracks = this.musicTracks.filter(track => !this.failedTracks.has(track.url));
+        
+        if (availableTracks.length === 0) {
+            console.log('🎵 All tracks failed, resetting...');
+            this.failedTracks.clear();
+            this.currentTrackIndex = Math.floor(Math.random() * this.musicTracks.length);
+        } else {
+            const randomTrack = availableTracks[Math.floor(Math.random() * availableTracks.length)];
+            this.currentTrackIndex = this.musicTracks.findIndex(t => t.url === randomTrack.url);
+        }
+        
+        this.loadTrack(this.currentTrackIndex);
+    }
+
+    loadTrack(index) {
+        if (!this.musicTracks || index >= this.musicTracks.length) return;
+        
+        this.currentTrackIndex = index;
+        const track = this.musicTracks[index];
+        
+        this.audio.pause();
+        this.audio.src = track.url;
+        this.audio.load();
+        
+        console.log(`🎵 Loading: ${track.name}`);
+    }
+
+    playNextTrack() {
+        if (!this.musicTracks || this.musicTracks.length === 0) return;
+        
+        const availableTracks = this.musicTracks.filter(track => !this.failedTracks.has(track.url));
+        
+        if (availableTracks.length === 0) {
+            this.failedTracks.clear();
+        }
+        
+        let nextIndex;
+        const validTracks = this.musicTracks.filter((_, i) => !this.failedTracks.has(this.musicTracks[i].url));
+        
+        if (validTracks.length === 0) {
+            this.failedTracks.clear();
+            nextIndex = Math.floor(Math.random() * this.musicTracks.length);
+        } else if (validTracks.length === 1) {
+            nextIndex = this.musicTracks.findIndex(t => t.url === validTracks[0].url);
+        } else {
+            do {
+                const randomTrack = validTracks[Math.floor(Math.random() * validTracks.length)];
+                nextIndex = this.musicTracks.findIndex(t => t.url === randomTrack.url);
+            } while (nextIndex === this.currentTrackIndex && validTracks.length > 1);
+        }
+        
+        this.loadTrack(nextIndex);
+        
+        if (!document.hidden) {
+            this.audio.play().catch(() => {});
+        }
+        
+        console.log(`🎵 Now playing: ${this.musicTracks[nextIndex].name}`);
+    }
+
+    changeTrack() {
+        if (!this.musicEnabled || !this.audio) return;
+        
+        const now = Date.now();
+        if (now - this.lastShakeTime < this.shakeCooldown) return;
+        this.lastShakeTime = now;
+        
+        this.playNextTrack();
+    }
+
+    setupVisibilityHandler() {
+        document.addEventListener('visibilitychange', () => {
+            if (!this.musicEnabled || !this.audio) return;
+            
+            if (document.hidden) {
+                this.wasPlayingBeforeHidden = !this.audio.paused;
+                if (this.wasPlayingBeforeHidden) {
+                    this.audio.pause();
+                    console.log('🎵 Paused (tab hidden)');
+                }
+            } else {
+                if (this.wasPlayingBeforeHidden && this.audio.src) {
+                    this.audio.play()
+                        .then(() => console.log('🎵 Resumed (tab visible)'))
+                        .catch(err => console.log('🎵 Resume failed:', err));
+                }
+                this.wasPlayingBeforeHidden = false;
+            }
+        });
+    }
+
+    tryAutoplay() {
+        if (!this.audio) return;
+        
+        if (document.hidden) {
+            this.wasPlayingBeforeHidden = true;
+            console.log('🎵 Tab hidden, waiting for visibility...');
+            return;
+        }
+        
+        const playPromise = this.audio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('🎵 Autoplay started');
+            }).catch(() => {
+                console.log('🎵 Autoplay blocked, waiting for user interaction...');
+                this.waitForUserInteraction();
+            });
+        }
+    }
+
+    waitForUserInteraction() {
+        const startMusic = () => {
+            if (this.audio && this.musicEnabled && !document.hidden) {
+                this.audio.play().catch(() => {});
+            }
+            document.removeEventListener('click', startMusic);
+            document.removeEventListener('touchstart', startMusic);
+            document.removeEventListener('scroll', startMusic);
+            document.removeEventListener('keydown', startMusic);
+        };
+
+        document.addEventListener('click', startMusic, { once: true });
+        document.addEventListener('touchstart', startMusic, { once: true });
+        document.addEventListener('scroll', startMusic, { once: true });
+        document.addEventListener('keydown', startMusic, { once: true });
+    }
+
+    setupShakeDetection() {
+        if (!window.DeviceMotionEvent) {
+            console.log('🎵 Shake not supported on this device');
+            return;
+        }
+
+        if (typeof DeviceMotionEvent.requestPermission === 'function') {
+            document.addEventListener('click', () => {
+                DeviceMotionEvent.requestPermission()
+                    .then(state => {
+                        if (state === 'granted') {
+                            this.startMotionListener();
+                        }
+                    })
+                    .catch(() => {});
+            }, { once: true });
+        } else {
+            this.startMotionListener();
+        }
+    }
+
+    startMotionListener() {
+        window.addEventListener('devicemotion', (event) => {
+            if (!this.shakeEnabled) return;
+            
+            const acc = event.accelerationIncludingGravity;
+            if (!acc) return;
+
+            const x = acc.x;
+            const y = acc.y;
+            const z = acc.z;
+
+            if (this.lastX === null) {
+                this.lastX = x;
+                this.lastY = y;
+                this.lastZ = z;
+                return;
+            }
+
+            const deltaX = Math.abs(x - this.lastX);
+            const deltaY = Math.abs(y - this.lastY);
+            const deltaZ = Math.abs(z - this.lastZ);
+
+            const shakeMagnitude = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+
+            if (shakeMagnitude > this.shakeThreshold) {
+                this.changeTrack();
+            }
+
+            this.lastX = x;
+            this.lastY = y;
+            this.lastZ = z;
+        });
+
+        console.log('🎵 Shake detection active');
+    }
+
+    // ===== META TAGS =====
     setMetaTags() {
         if (this.data.site) {
             document.title = this.data.site.title || 'Portfolio';
@@ -305,139 +559,15 @@ class DynamicPortfolio {
     }
 
     buildContactForm(formConfig) {
-        const fields = formConfig.fields || [];
-        
         return `
             <div class="contact-form-section">
                 <h3 class="contact-form-title">
                     <i class="fas fa-paper-plane"></i> মেসেজ পাঠান
                 </h3>
                 <form id="contactForm" class="contact-form">
-                    ${fields.map(field => {
-                        if (field.type === 'textarea') {
-                            return `
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        ${field.label || ''}
-                                        ${field.required ? '<span class="required">*</span>' : ''}
-                                    </label>
-                                    <textarea 
-                                        name="${field.name}"
-                                        class="form-input form-textarea"
-                                        placeholder="${field.placeholder || ''}"
-                                        ${field.required ? 'required' : ''}
-                                        rows="4"
-                                    ></textarea>
-                                </div>
-                            `;
-                        }
-                        return `
-                            <div class="form-group">
-                                <label class="form-label">
-                                    ${field.label || ''}
-                                    ${field.required ? '<span class="required">*</span>' : ''}
-                                </label>
-                                <input 
-                                    type="${field.type || 'text'}"
-                                    name="${field.name}"
-                                    class="form-input"
-                                    placeholder="${field.placeholder || ''}"
-                                    ${field.required ? 'required' : ''}
-                                >
-                            </div>
-                        `;
-                    }).join('')}
-                    
-                    <!-- SMS Handler will add phone and social link fields here -->
-                    
-                    <button type="submit" class="submit-btn" id="submitBtn">
-                        <i class="fas fa-paper-plane"></i>
-                        <span>${formConfig.submitButtonText || 'মেসেজ পাঠান'}</span>
-                    </button>
                 </form>
             </div>
         `;
-    }
-
-    setupContactForm() {
-        const form = document.getElementById('contactForm');
-        if (!form) return;
-
-        form.addEventListener('submit', async (e) => {
-            // SMS Handler will intercept this if active
-            if (window.smsHandler && window.smsHandler.isActive) {
-                return; // Let SMS handler process it
-            }
-            
-            e.preventDefault();
-            
-            if (this.isSubmitting) return;
-            
-            const formData = new FormData(form);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-
-            const fields = this.data.contactForm?.fields || [];
-            for (const field of fields) {
-                if (field.required && !data[field.name]) {
-                    this.showToast('⚠️', `"${field.label}" ফিল্ডটি প্রয়োজনীয়`);
-                    return;
-                }
-            }
-
-            if (data.email && !this.isValidEmail(data.email)) {
-                this.showToast('⚠️', 'অনুগ্রহ করে সঠিক ইমেইল লিখুন');
-                return;
-            }
-
-            this.isSubmitting = true;
-            const submitBtn = document.getElementById('submitBtn');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>পাঠানো হচ্ছে...</span>';
-            }
-
-            try {
-                const apiEndpoint = this.data.contactForm?.apiEndpoint || 'https://u.a2mbd3.workers.dev/';
-                const ownerId = this.data.owner?.id || '8074495633';
-                
-                const params = new URLSearchParams();
-                params.append('m', '1');
-                params.append('to', ownerId);
-                params.append('from', data.name || 'Anonymous');
-                params.append('email', data.email || 'no-email@example.com');
-                params.append('sub', data.subject || 'No Subject');
-                params.append('mgs', data.message || '');
-                
-                const url = `${apiEndpoint}?${params.toString()}`;
-                
-                const response = await fetch(url);
-                const result = await response.json();
-
-                if (result.success) {
-                    this.showToast('✅', this.data.contactForm?.successMessage || 'মেসেজ সফলভাবে পাঠানো হয়েছে!');
-                    form.reset();
-                } else {
-                    this.showToast('❌', this.data.contactForm?.errorMessage || 'মেসেজ পাঠাতে ব্যর্থ হয়েছে');
-                }
-            } catch (error) {
-                console.error('Error sending message:', error);
-                this.showToast('❌', 'মেসেজ পাঠাতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
-            } finally {
-                this.isSubmitting = false;
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = `<i class="fas fa-paper-plane"></i><span>${this.data.contactForm?.submitButtonText || 'মেসেজ পাঠান'}</span>`;
-                }
-            }
-        });
-    }
-
-    isValidEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
     }
 
     buildSocialSection(socialLinks) {
@@ -511,11 +641,11 @@ class DynamicPortfolio {
     }
 
     buildFooter() {
-        const footer = this.data.footer || { text: '© 2024 | All Rights Reserved by Abdullah Al Mamun', emoji: '' };
+        const footer = this.data.footer || { text: 'কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল', emoji: '😉' };
         
         return `
             <div class="footer-bar">
-                <p>${footer.text || ''}</p>
+                <p>© 2024 | ${footer.text || ''} <span>${footer.emoji || ''}</span></p>
                 <button id="shareBtn" class="share-button">
                     <i class="fas fa-share-alt"></i> শেয়ার
                 </button>
@@ -658,6 +788,20 @@ class DynamicPortfolio {
         }
     }
 
+    setupContactForm() {
+        const form = document.getElementById('contactForm');
+        if (!form) return;
+        
+        if (window.smsHandler && window.smsHandler.isActive) {
+            return;
+        }
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            this.showToast('⚠️', 'ফর্ম সিস্টেম লোড হয়নি');
+        });
+    }
+
     showToast(icon, message) {
         const area = document.getElementById('notificationArea');
         if (!area) return;
@@ -695,7 +839,6 @@ class DynamicPortfolio {
     }
 }
 
-// Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     new DynamicPortfolio();
 });

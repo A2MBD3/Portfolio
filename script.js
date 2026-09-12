@@ -641,11 +641,12 @@ class DynamicPortfolio {
     }
 
     buildFooter() {
-        const footer = this.data.footer || { text: 'কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল', emoji: '😉' };
+        const footer = this.data.footer || { text: 'কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল 😉' };
+        const year = new Date().getFullYear();
         
         return `
             <div class="footer-bar">
-                <p>${footer.text || ''} </p>
+                <p>© <span id="currentYear">${year}</span> | ${footer.text || ''}</p>
                 <button id="shareBtn" class="share-button">
                     <i class="fas fa-share-alt"></i> শেয়ার
                 </button>
@@ -747,7 +748,13 @@ class DynamicPortfolio {
 
             const card = e.target.closest('.project-card');
             if (card && card.dataset.link) {
-                window.open(card.dataset.link, '_blank');
+                const link = card.dataset.link;
+                // Relative internal links open in same tab; external in new tab
+                if (link.startsWith('http://') || link.startsWith('https://')) {
+                    window.open(link, '_blank', 'noopener,noreferrer');
+                } else {
+                    window.location.href = link;
+                }
             }
         });
     }

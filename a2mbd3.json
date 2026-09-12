@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "আবদুল্লাহ আল মামুন",
-    "description": "আবদুল্লাহ আল মামুন",
+    "description": "আবদুল্লাহ আল মামুন - ওয়েব ডেভেলপার ও শিক্ষার্থী | বরিশাল, বাংলাদেশ",
     "lang": "bn"
   },
   "owner": {
@@ -20,7 +20,6 @@
     "rainEffect": true,
     "rainDropCount": 100
   },
-  
   "music": {
     "enabled": true,
     "volume": 0.25,
@@ -34,14 +33,9 @@
       {
         "name": "Soft Ambient",
         "url": "https://raw.githubusercontent.com/A2MBD3/Aincrad/main/assets/music/apalonbeats.mp3"
-      },
-      {
-        "name": "Gentle Background",
-        "url": "https://raw.githubusercontent.com/A2MBD3/Aincrad/main/assets/music/alexmorgan.mp3"
       }
     ]
   },
-
   "personal": {
     "name": "আবদুল্লাহ আল মামুন",
     "profession": "ওয়েব ডেভেলপার ও শিক্ষার্থী",
@@ -55,14 +49,32 @@
     "bio": "আমি আবদুল্লাহ আল মামুন, একজন শিক্ষার্থী। বিজ্ঞান বিভাগে পড়াশোনা করছি এবং ওয়েব ডেভেলপমেন্টে আমার গভীর আগ্রহ রয়েছে। আমি নতুন নতুন প্রযুক্তি শিখতে পছন্দ করি এবং ক্রিয়েটিভ কাজ করতে ভালোবাসি।"
   },
   "profileDetails": [
-    {"icon": "fa-graduation-cap", "label": "ইন্টারমিডিয়েট পরীক্ষার্থী"},
-    {"icon": "fa-map-marker-alt", "label": "বরিশাল, বাংলাদেশ"}
+    {
+      "icon": "fa-graduation-cap",
+      "label": "ইন্টারমিডিয়েট পরীক্ষার্থী"
+    },
+    {
+      "icon": "fa-map-marker-alt",
+      "label": "বরিশাল, বাংলাদেশ"
+    }
   ],
   "aboutItems": [
-    {"icon": "fa-book", "text": "পড়াশোনা: উচ্চমাধ্যমিক"},
-    {"icon": "fa-bullseye", "text": "লক্ষ্য: অনির্ধারিত"},
-    {"icon": "fa-heart", "text": "প্যাশন: নতুন টেকনোলজি শেখা"},
-    {"icon": "fa-building", "text": "ডিপার্টমেন্ট: বিজ্ঞান"}
+    {
+      "icon": "fa-book",
+      "text": "পড়াশোনা: উচ্চমাধ্যমিক"
+    },
+    {
+      "icon": "fa-bullseye",
+      "text": "লক্ষ্য: অনির্ধারিত"
+    },
+    {
+      "icon": "fa-heart",
+      "text": "প্যাশন: নতুন টেকনোলজি শেখা"
+    },
+    {
+      "icon": "fa-building",
+      "text": "ডিপার্টমেন্ট: বিজ্ঞান"
+    }
   ],
   "contact": {
     "email": "aam.abdullah1@hotmail.com",
@@ -77,10 +89,30 @@
     "errorMessage": "মেসেজ পাঠাতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"
   },
   "social": [
-    {"name": "GitHub", "icon": "fa-github", "url": "https://github.com/A2MBD3", "color": "#333333"},
-    {"name": "Facebook", "icon": "fa-facebook", "url": "https://www.facebook.com/a2mbd3", "color": "#1877f2"},
-    {"name": "Instagram", "icon": "fa-instagram", "url": "https://instagram.com/a2mbd3", "color": "#e4405f"},
-    {"name": "Telegram", "icon": "fa-telegram", "url": "https://t.me/a2mbd3", "color": "#0088cc"}
+    {
+      "name": "GitHub",
+      "icon": "fa-github",
+      "url": "https://github.com/A2MBD3",
+      "color": "#333333"
+    },
+    {
+      "name": "Facebook",
+      "icon": "fa-facebook",
+      "url": "https://www.facebook.com/a2mbd3",
+      "color": "#1877f2"
+    },
+    {
+      "name": "Instagram",
+      "icon": "fa-instagram",
+      "url": "https://instagram.com/a2mbd3",
+      "color": "#e4405f"
+    },
+    {
+      "name": "Telegram",
+      "icon": "fa-telegram",
+      "url": "https://t.me/a2mbd3",
+      "color": "#0088cc"
+    }
   ],
   "hobbies": [
     "ঘুম",
@@ -91,12 +123,30 @@
     "গান শোনা"
   ],
   "skills": [
-    {"name": "Freefire", "level": 100},
-    {"name": "Java Game", "level": 98},
-    {"name": "Scarfall 2.0", "level": 70},
-    {"name": "PUBG", "level": 50},
-    {"name": "Call Of Duty", "level": 25},
-    {"name": "Delta Force", "level": 6}
+    {
+      "name": "Freefire",
+      "level": 100
+    },
+    {
+      "name": "Java Game",
+      "level": 98
+    },
+    {
+      "name": "Scarfall 2.0",
+      "level": 70
+    },
+    {
+      "name": "PUBG",
+      "level": 50
+    },
+    {
+      "name": "Call Of Duty",
+      "level": 25
+    },
+    {
+      "name": "Delta Force",
+      "level": 6
+    }
   ],
   "tools": [
     {
@@ -109,25 +159,25 @@
       "name": "এনক্রিপশন ডিক্রিপশন টুল",
       "description": "আপনার টেক্সট সুরক্ষিতভাবে এনক্রিপ্ট এবং ডিক্রিপ্ট করুন base64 & AES",
       "icon": "fa-shield",
-      "link": "/p/encrypt.html"
+      "link": "p/encrypt.html"
     },
     {
       "name": "Saved Wifi Analyzer",
       "description": "View all saved wifi passwords on your rooted device. file wificonfigstore.xml",
       "icon": "fa-wifi",
-      "link": "/p/wifi.html"
+      "link": "p/wifi.html"
     },
     {
       "name": "Hagu Agent",
       "description": "ফালতু একটা AI chatbot যা আপনি মাগনা ইউজ করতে পারেন কিন্তু এটা আপনার কাজে দেবে না",
       "icon": "fa-comments",
-      "link": "/p/hagu.html"
+      "link": "p/hagu.html"
     },
     {
       "name": "Love ভাষা এনকোডার",
       "description": "এটা নিব্বা নিব্বীদের কাজে লাগবে আপনার না",
       "icon": "fa-heart",
-      "link": "/p/l.html"
+      "link": "p/l.html"
     },
     {
       "name": "Google",
@@ -139,33 +189,45 @@
       "name": "জীবন উন্নতির দিনলিপি",
       "description": "একটা রুটিন যা আপনার ফলো করা উচিত",
       "icon": "fa-sticky-note",
-      "link": "/p/routine.html"
+      "link": "p/routine.html"
     },
     {
       "name": "Tic Tac Toe গেম",
       "description": "হুদাই অনেক আগে বানাইছিলম",
       "icon": "fa-gamepad",
-      "link": "/p/ttt.html"
+      "link": "p/ttt.html"
     },
     {
       "name": "device info",
       "description": "",
       "icon": "fa-gamepad",
-      "link": "/p/info.html"
+      "link": "p/info.html"
     }
   ],
   "images": {
     "profile": [
-      "/assets/p.png"
+      "assets/p.png"
     ],
-    "freefire_bg": "/assets/f.jpg"
+    "freefire_bg": "assets/f.jpg"
   },
   "navigation": [
-    {"label": "হোম", "icon": "fa-home", "section": "home"},
-    {"label": "যোগাযোগ", "icon": "fa-address-book", "section": "contact"},
-    {"label": "প্রজেক্ট", "icon": "fa-code", "section": "projects"}
+    {
+      "label": "হোম",
+      "icon": "fa-home",
+      "section": "home"
+    },
+    {
+      "label": "যোগাযোগ",
+      "icon": "fa-address-book",
+      "section": "contact"
+    },
+    {
+      "label": "প্রজেক্ট",
+      "icon": "fa-code",
+      "section": "projects"
+    }
   ],
   "footer": {
-    "text": "© 2024 | কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল 😉"
+    "text": "কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল 😉"
   }
 }

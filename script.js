@@ -27,9 +27,7 @@ class DynamicPortfolio {
 
     async init() {
         try {
-            const response = await fetch('a2mbd3.json');
-            if (!response.ok) throw new Error('Failed to load data');
-            this.data = await response.json();
+            this.data = await this.loadPortfolioData();
             
             this.setMetaTags();
             this.applyTheme();
@@ -50,6 +48,42 @@ class DynamicPortfolio {
             console.error('Error:', error);
             this.showError('ডাটা লোড করতে ব্যর্থ হয়েছে');
         }
+    }
+
+    /**
+     * Load portfolio data: API (Neon via Worker) first, then local JSON fallback.
+     * Set window.PORTFOLIO_API to your Worker URL, e.g. https://portfolio-api.xxx.workers.dev
+     */
+    getApiBase() {
+        if (window.PORTFOLIO_API) return window.PORTFOLIO_API.replace(/\/+$/, '');
+        // Default Worker URL — change after deploy
+        return 'https://portfolio-api.a2mbd3.workers.dev';
+    }
+
+    async loadPortfolioData() {
+        const apiBase = this.getApiBase();
+        try {
+            const res = await fetch(apiBase + '/api/portfolio', {
+                headers: { 'Accept': 'application/json' },
+                cache: 'no-store'
+            });
+            if (res.ok) {
+                const data = await res.json();
+                console.log('📦 Data loaded from API');
+                // Point contact form to same API
+                if (data.contactForm) {
+                    data.contactForm.apiEndpoint = apiBase + '/api/contact';
+                }
+                return data;
+            }
+            console.warn('API returned', res.status, '— falling back to JSON');
+        } catch (e) {
+            console.warn('API unavailable, falling back to JSON:', e.message);
+        }
+        const response = await fetch('a2mbd3.json');
+        if (!response.ok) throw new Error('Failed to load data');
+        console.log('📦 Data loaded from local JSON (fallback)');
+        return response.json();
     }
 
     // ===== BACKGROUND MUSIC =====
@@ -838,7 +872,7 @@ class DynamicPortfolio {
                     <div>
                         <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:#c084fc;margin-bottom:20px;"></i>
                         <p style="font-size:1.2rem;">${message}</p>
-                        <p style="color:rgba(255,255,255,0.6);margin-top:10px;">অনুগ্রহ করে a2mbd3.json ফাইলটি চেক করুন</p>
+                        <p style="color:rgba(255,255,255,0.6);margin-top:10px;">API বা a2mbd3.json চেক করুন</p>
                     </div>
                 </div>
             `;

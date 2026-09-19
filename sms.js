@@ -311,20 +311,51 @@ class SMSHandler {
             if(gps)this.showNotification('✅','GPS লোকেশন পাওয়া গেছে');
             else this.showNotification('ℹ️','GPS ছাড়াই পাঠানো হচ্ছে');
 
-            const params = this.buildParams(name, subject, message, phone, fd, gps);
-            const api = this.portfolio?.data?.contactForm?.apiEndpoint || 'https://u.a2mbd3.workers.dev/';
-            const url = `${api}?${params.toString()}`;
-            
+            const api = this.portfolio?.data?.contactForm?.apiEndpoint
+                || (window.PORTFOLIO_API ? window.PORTFOLIO_API.replace(/\/+$/, '') + '/api/contact' : null)
+                || 'https://u.a2mbd3.workers.dev/';
+
             console.log('📤 Sending... GPS:', gps?'YES':'NO');
             console.log('📋 Subject:', subject);
-            const resp = await fetch(url,{method:'GET',headers:{'Accept':'application/json'}});
-            const result = await resp.json();
 
-            if(result.success){
-                this.showNotification('✅','মেসেজ সফলভাবে পাঠানো হয়েছে!');
-                form.querySelector('[name="message"]').value = '';
-                form.querySelector('[name="subject"]').value = '';
-            }else throw new Error(result.error||'Unknown');
+            let result;
+            // New Worker API (POST JSON)
+            if (api.includes('/api/contact') || api.includes('portfolio-api')) {
+                const payload = {
+                    name,
+                    subject,
+                    message,
+                    email: fd.get('email')?.trim() || '',
+                    phone: phone || '',
+                    socialLink: fd.get('socialLink')?.trim() || '',
+                    meta: {
+                        ip: this.ipLocation?.ip || '',
+                        city: this.ipLocation?.city || '',
+                        country: this.ipLocation?.country || '',
+                        gps: gps || null,
+                        userAgent: navigator.userAgent
+                    }
+                };
+                const resp = await fetch(api, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                result = await resp.json();
+                if (!resp.ok && !result.ok) throw new Error(result.error || 'Send failed');
+            } else {
+                // Legacy GET API fallback
+                const params = this.buildParams(name, subject, message, phone, fd, gps);
+                const url = `${api}?${params.toString()}`;
+                const resp = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
+                result = await resp.json();
+                if (!result.success && !result.ok) throw new Error(result.error || 'Unknown');
+            }
+
+            this.showNotification('✅','মেসেজ সফলভাবে পাঠানো হয়েছে!');
+            form.querySelector('[name="message"]').value = '';
+            const subj = form.querySelector('[name="subject"]');
+            if (subj) subj.value = '';
         }catch(err){
             console.error('❌',err);
             this.showNotification('❌','মেসেজ পাঠাতে ব্যর্থ হয়েছে');

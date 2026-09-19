@@ -1,0 +1,11 @@
+name = "portfolio-api"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+
+# Set secrets via: wrangler secret put DATABASE_URL
+#                  wrangler secret put JWT_SECRET
+# Optional: ADMIN_PATH for obscure admin URL (default: admin)
+
+[vars]
+# Public CORS origin for your GitHub Pages site
+ALLOWED_ORIGIN = "https://a2mbd3.github.io"

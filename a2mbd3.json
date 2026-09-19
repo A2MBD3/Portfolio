@@ -83,7 +83,7 @@
   },
   "contactForm": {
     "enabled": true,
-    "apiEndpoint": "https://u.a2mbd3.workers.dev/",
+    "apiEndpoint": "https://portfolio-api.a2mbd3.workers.dev/api/contact",
     "submitButtonText": "মেসেজ পাঠান",
     "successMessage": "মেসেজ সফলভাবে পাঠানো হয়েছে!",
     "errorMessage": "মেসেজ পাঠাতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"
@@ -229,5 +229,6 @@
   ],
   "footer": {
     "text": "কোডিং জানা না জানা কোন বিশেষ ব্যাপার নয়, আইডিয়াটাই আসল 😉"
-  }
+  },
+  "_note": "Fallback file. Prefer Neon DB via Worker API when available."
 }

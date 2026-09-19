@@ -1,123 +1,138 @@
-# Portfolio + Neon + Cloudflare Workers Setup
+# Setup guide — Neon + Workers + Pages
 
-পাবলিক সাইট: GitHub Pages  
-API + অ্যাডমিন: Cloudflare Worker  
-ডাটাবেজ: Neon Postgres (Free)
-
-অ্যাডমিন প্যানেল পাবলিক সাইটে লিংক করা নেই — শুধু Worker URL-এ পাওয়া যায়।
+Developer-oriented. Secrets never go in git.
 
 ---
 
-## ১. Neon Database
+## Where secrets live
 
-1. https://neon.tech এ অ্যাকাউন্ট খুলুন
-2. নতুন প্রজেক্ট তৈরি করুন
-3. Connection string কপি করুন (এমন দেখাবে):
-   `postgresql://user:pass@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require`
-4. Neon SQL Editor-এ খুলুন:
-   - আগে `sql/schema.sql` পুরোটা রান করুন
-   - তারপর `sql/seed.sql` রান করুন
+```
+┌─────────────────┐     encrypted      ┌──────────────────┐
+│ Neon Dashboard  │ ─────────────────► │ You copy URL     │
+└─────────────────┘                    └────────┬─────────┘
+                                                │
+                     npx wrangler secret put     │
+                     DATABASE_URL                ▼
+                                       ┌──────────────────┐
+                                       │ Cloudflare Worker│
+                                       │ Secrets store    │
+                                       │ (not in git)     │
+                                       └──────────────────┘
+```
 
-**ডিফল্ট অ্যাডমিন**
-- Username: `admin`
-- Password: `ChangeMe@2026`
-- প্রথম লগইনের পর Password মেনু থেকে বদলে নিন
+| Secret | Command | Used for |
+|--------|---------|----------|
+| `DATABASE_URL` | `wrangler secret put DATABASE_URL` | Neon Postgres |
+| `JWT_SECRET` | `wrangler secret put JWT_SECRET` | Admin JWT signing |
+| `ADMIN_PATH` | optional | Obscure admin URL path |
+
+**Do not** put these in:
+
+- `wrangler.toml` `[vars]`
+- `config.js`
+- any `.env` committed to git
+- GitHub Actions logs without masking
+
+Local dev only: create `worker/.dev.vars` (gitignored):
+
+```
+DATABASE_URL=postgresql://...
+JWT_SECRET=dev-secret-min-32-chars-long!!
+```
 
 ---
 
-## ২. Cloudflare Worker
+## 1. Neon
+
+1. [neon.tech](https://neon.tech) → New project  
+2. Connection string → save in a password manager (not in the repo)  
+3. SQL Editor → run `sql/schema.sql` → then `sql/seed.sql`
+
+Seed admin: `admin` / `ChangeMe@2026` → change on first login.
+
+---
+
+## 2. Cloudflare Worker
 
 ```bash
 cd worker
 npm install
 npx wrangler login
-```
-
-Secrets সেট করুন:
-
-```bash
 npx wrangler secret put DATABASE_URL
-# Neon connection string পেস্ট করুন
-
 npx wrangler secret put JWT_SECRET
-# যেকোনো লম্বা র‍্যান্ডম স্ট্রিং (যেমন: openssl rand -hex 32)
-```
-
-`wrangler.toml` এ `ALLOWED_ORIGIN` চেক করুন:
-```toml
-ALLOWED_ORIGIN = "https://a2mbd3.github.io"
-```
-
-ডিপ্লয়:
-
-```bash
 npx wrangler deploy
 ```
 
-ডিপ্লয়ের পর URL পাবেন, যেমন:
-`https://portfolio-api.<subdomain>.workers.dev`
+Note the URL, e.g. `https://portfolio-api.<account>.workers.dev`.
+
+CORS: edit `worker/wrangler.toml`:
+
+```toml
+[vars]
+ALLOWED_ORIGIN = "https://a2mbd3.pages.dev"
+```
+
+Redeploy after changing vars.
 
 ---
 
-## ৩. Frontend কানেক্ট
+## 3. Cloudflare Pages (frontend)
 
-রুটের `config.js` ফাইলে Worker URL দিন:
+- Connect this GitHub repo to Pages  
+- Production URL: `https://a2mbd3.pages.dev`  
+- Set `config.js`:
 
 ```js
-window.PORTFOLIO_API = 'https://portfolio-api.YOUR_SUBDOMAIN.workers.dev';
+window.PORTFOLIO_API = 'https://portfolio-api.<account>.workers.dev';
 ```
 
-GitHub-এ পুশ করলে Pages আপডেট হবে।
+Commit & push — Pages rebuilds. No database secrets needed on Pages.
 
-API কাজ না করলে সাইট স্বয়ংক্রিয়ভাবে পুরনো `a2mbd3.json` fallback ব্যবহার করবে।
+Until the Worker is live, the site falls back to `a2mbd3.json`.
 
 ---
 
-## ৪. অ্যাডমিন প্যানেল
-
-URL (পাবলিক সাইটে লিংক নেই):
+## 4. Admin panel
 
 ```
-https://portfolio-api.YOUR_SUBDOMAIN.workers.dev/admin
+https://portfolio-api.<account>.workers.dev/admin
 ```
 
-লগইন → Profile / Skills / Projects / Social / Settings / Messages এডিট করুন।
+Not linked from the portfolio. Optional:
 
-ঐচ্ছিক: আরও লুকাতে চাইলে Worker env-এ `ADMIN_PATH` সেট করুন (যেমন `panel-x7k2`) — তখন URL হবে `/panel-x7k2`।
-
----
-
-## ৫. API Endpoints
-
-| Method | Path | Auth | কাজ |
-|--------|------|------|-----|
-| GET | `/api/portfolio` | না | পুরো পোর্টফোলিও ডেটা |
-| POST | `/api/contact` | না | কন্টাক্ট মেসেজ সেভ |
-| GET | `/api/health` | না | DB হেলথ চেক |
-| POST | `/api/admin/login` | না | অ্যাডমিন লগইন |
-| * | `/api/admin/*` | JWT | CRUD অপারেশন |
-| GET | `/admin` | UI | অ্যাডমিন প্যানেল |
-
----
-
-## ৬. ফোল্ডার স্ট্রাকচার
-
-```
-/
-  index.html, script.js, style.css, config.js   ← পাবলিক সাইট
-  a2mbd3.json                                  ← fallback (API চালু হলে আর লাগে না)
-  sql/schema.sql, sql/seed.sql
-  worker/
-    src/index.js                               ← API + Admin UI
-    wrangler.toml, package.json
-  SETUP.md
+```bash
+npx wrangler secret put ADMIN_PATH
+# value e.g. my-secret-panel
+# then open /my-secret-panel
 ```
 
 ---
 
-## ট্রাবলশুট
+## 5. Fork / open-source use
 
-- **CORS error**: `ALLOWED_ORIGIN` ঠিক আছে কিনা দেখুন
-- **DB error**: `DATABASE_URL` secret ও Neon IP/ssl চেক করুন
-- **401 Admin**: নতুন করে লগইন, JWT_SECRET একই আছে কিনা
-- **Health**: `GET /api/health` খুলে DB কানেকশন টেস্ট করুন
+Another developer:
+
+1. Forks the repo  
+2. Creates **their own** Neon project + secrets  
+3. Deploys **their own** Worker  
+4. Points `config.js` + `ALLOWED_ORIGIN` to **their** Pages URL  
+
+They never get access to your Neon database.
+
+---
+
+## Health check
+
+```
+GET https://<worker>/api/health
+→ { "ok": true, "db": true }
+```
+
+## Troubleshooting
+
+| Issue | Check |
+|-------|--------|
+| CORS | `ALLOWED_ORIGIN` matches exact Pages origin |
+| 500 on portfolio | `DATABASE_URL` secret + schema applied |
+| 401 admin | JWT_SECRET set; login again after changing it |
+| Fallback JSON | Worker URL wrong in `config.js` or Worker not deployed |
